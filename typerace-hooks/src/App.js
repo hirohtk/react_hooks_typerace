@@ -29,6 +29,9 @@ const App = () => {
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
 
   const updateUserText = event => {
+    if (gameState.startTime === null) {
+      setGameState({...gameState, startTime: new Date().getTime()})
+    }
     setUserText(event.target.value);
     console.log(`current userText is ${userText}`);
     console.log(`versus event target value which is ${event.target.value}`);
@@ -47,20 +50,21 @@ const App = () => {
     setSnippet(SNIPPETS[snippetIndex]);
     // Once snippet is chosen, begin the game, which includes everything in the current gamestate,/
     // but now, changing the startTime to now
-    setGameState({ ...gameState, startTime: new Date().getTime()})
-    document.getElementById("textbox").focus();
+    setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true})
   };
 
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   useEffect(() => {
     console.log(`useEffect fired.  gameState with new Time is now ${gameState.startTime}`);
-  }, [gameState])
+  }, [gameState.prepared])
 
   return (
     <div>
       <h2>Type Race</h2>
+      {gameState.readyMessage}
+      <br></br><br></br>
       {snippet}
-      <input id="textbox" value={userText} onChange={updateUserText}></input>
+      {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText}></input> : null}
 
       {SNIPPETS.map((each, index) => (
         // NEED callback to call chooseSnippet

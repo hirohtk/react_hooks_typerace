@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import axios from "axios";
 
 const Game = () => {
 
@@ -53,9 +53,11 @@ const Game = () => {
   };
 
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
+  // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
-    console.log(`useEffect fired.  gameState with new Time is now ${gameState.startTime}`);
-  }, [gameState.prepared])
+    axios.get("/scrape").then( (response) => console.log(`${JSON.stringify(response)}`)
+    )
+  }, [])
 
   return (
     <div>

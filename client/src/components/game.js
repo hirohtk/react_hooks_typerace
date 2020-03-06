@@ -14,10 +14,9 @@ const Game = () => {
   // Note to self:  the 0th index can be an array (which you can use to map)
 
   const SNIPPETS = [
-    'Bears, beets, battlestar galactica',
-    "What's Forrest Gump's password? 1Forrest1",
-    'Where do programmers like to hangout? The Foo Bar'
   ];
+
+  const [quotes, setQuotes] = useState([]);
 
   const [snippet, setSnippet] = useState("");
 
@@ -26,6 +25,10 @@ const Game = () => {
   const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null};
 
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
+
+  const loadQuotes = (response) => {
+    setQuotes({response});
+  }
 
   const updateUserText = event => {
     if (gameState.startTime === null) {
@@ -55,9 +58,8 @@ const Game = () => {
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
-    axios.get("/scrape").then( (response) => console.log(`${JSON.stringify(response)}`)
-    )
-  }, [])
+    axios.get("/scrape").then( (response) => loadQuotes(response)
+    )}, [])
 
   return (
     <div>

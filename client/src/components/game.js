@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from "axios";
 
 const Game = () => {
 
-     // hook that sets "" as the initial value for both userText, setUserText
+  // hook that sets "" as the initial value for both userText, setUserText
 
   // HOOKS USE DESTRUCTURING HERE: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
 
@@ -16,23 +16,24 @@ const Game = () => {
   const SNIPPETS = [
   ];
 
+  // FOR FIRING USEEFFECTS THAT SHOULD NOT FIRE ON THE FIRST RENDER
+  const firstMount = useRef(true);
+
   const [quotes, setQuotes] = useState([]);
+
+  const [selection, setSelection] = useState([]);
 
   const [snippet, setSnippet] = useState("");
 
   const [userText, setUserText] = useState("");
 
-  const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null};
+  const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null };
 
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
 
-  const loadQuotes = (response) => {
-    setQuotes({response});
-  }
-
   const updateUserText = event => {
     if (gameState.startTime === null) {
-      setGameState({...gameState, startTime: new Date().getTime()})
+      setGameState({ ...gameState, startTime: new Date().getTime() })
     }
     setUserText(event.target.value);
     console.log(`current userText is ${userText}`);
@@ -42,7 +43,7 @@ const Game = () => {
     if (event.target.value === snippet) {
       let finishTime = new Date().getTime();
       let totalTime = finishTime - gameState.startTime;
-      setGameState({...gameState, victory: true, endTime: finishTime, totalTime: totalTime})
+      setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime })
       console.log(`it took you ${totalTime} to win this game`)
     }
   }
@@ -52,21 +53,44 @@ const Game = () => {
     setSnippet(SNIPPETS[snippetIndex]);
     // Once snippet is chosen, begin the game, which includes everything in the current gamestate,/
     // but now, changing the startTime to now
-    setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true})
+    setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
   };
 
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
-    axios.get("/scrape").then( (response) => loadQuotes(response)
-    )}, [])
+    axios.get("/scrape").then((response) => setQuotes(response.data)
+    )
+  }, [])
+
+  useEffect(() => {
+    // CONDITIONAL AND firstMount USEREF prevent this effect from firing on initial render
+    if (firstMount.current === true) {
+      console.log(`not doing anything`)
+      firstMount.current = false;
+      return;
+    }
+    if (quotes) {
+      // randomize the index of the quotes array to select a quote
+      console.log(`this shouldn't fire on initial mount`)
+      let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      console.log(randomQuote);
+      setSelection([randomQuote.quote, randomQuote.author]);
+    }
+      
+  }, [quotes])
+
+  // useEffect(() => {
+  //   console.log(`your quote is ${selection}`);
+  // }, [selection])
 
   return (
     <div>
       <h2>Type Race</h2>
       {gameState.readyMessage}
       <br></br><br></br>
-      {snippet}
+      Your quote to type is:
+      {selection[0]}{selection[1]}
       {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText}></input> : null}
 
       {SNIPPETS.map((each, index) => (

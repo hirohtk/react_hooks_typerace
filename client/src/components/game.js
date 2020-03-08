@@ -14,9 +14,6 @@ const Game = () => {
 
   // Note to self:  the 0th index can be an array (which you can use to map)
 
-  const SNIPPETS = [
-  ];
-
   // FOR FIRING USEEFFECTS THAT SHOULD NOT FIRE ON THE FIRST RENDER
   const firstMount = useRef(true);
 
@@ -24,7 +21,7 @@ const Game = () => {
 
   const [selection, setSelection] = useState([]);
 
-  const [snippet, setSnippet] = useState("");
+  const [replay, setReplay] = useState(false)
 
   const [userText, setUserText] = useState("");
 
@@ -46,9 +43,23 @@ const Game = () => {
     }
   }
 
-  const ready = () => {
+  const setup = () => {
+    console.log(`this shouldn't fire on initial mount`)
+    let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    console.log(randomQuote);
+    setSelection([randomQuote.quote, randomQuote.author]);
     setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
-  };
+    setReplay(false);
+  }
+
+  const reset = () => {
+    // Having so many async state setting may be a problem... need to refer back to this at some point.
+    // I think the only time this may be okay is if all of these run, and only the one that matters for doing an async operation
+    // to move onto the next stage can be put in a useEffect
+    setGameState({...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
+    setUserText("");
+    setReplay(true);
+  }
 
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
@@ -64,20 +75,12 @@ const Game = () => {
       firstMount.current = false;
       return;
     }
-    if (quotes) {
+    if (quotes || replay) {
       // randomize the index of the quotes array to select a quote
-      console.log(`this shouldn't fire on initial mount`)
-      let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-      console.log(randomQuote);
-      setSelection([randomQuote.quote, randomQuote.author]);
-      ready();
+      setup();
     }
-      
-  }, [quotes])
 
-  // useEffect(() => {
-  //   console.log(`your quote is ${selection}`);
-  // }, [selection])
+  }, [quotes, replay])
 
   return (
     <div>
@@ -85,10 +88,13 @@ const Game = () => {
       {gameState.readyMessage}
       <br></br><br></br>
       <p>Your quote to type is:<br></br><span id="fadeIn">{selection[0]}<br></br>{selection[1]}</span></p>
-      
-      {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText}></input> : null}
 
-      {gameState.victory ? <h1>Game finished in {gameState.totalTime} milliseconds</h1> : ""}
+      {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText}></input> : null}
+      <br></br>
+      <button onClick={() => setup()}>Get another random quote to use.</button>
+
+      {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
+      <button onClick={() => reset()}>Play again?</button></div> : ""}
 
       {/* 
 

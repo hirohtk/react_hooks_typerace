@@ -7,7 +7,7 @@ const cheerio = require("cheerio");
 
 router.get("/scrape", function (req, res) {
 
-    axios.get("http://www.famousquotesandauthors.com/topics/inspirational_quotes.html").then(function (response) {
+    axios.get("http://www.famousquotesandauthors.com/topics/sea_quotes.html").then(function (response) {
 
       let quoteArray = [];
 

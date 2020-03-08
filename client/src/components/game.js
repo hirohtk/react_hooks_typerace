@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from "axios";
+import "./game.css"
 
 const Game = () => {
 
@@ -36,11 +37,8 @@ const Game = () => {
       setGameState({ ...gameState, startTime: new Date().getTime() })
     }
     setUserText(event.target.value);
-    console.log(`current userText is ${userText}`);
-    console.log(`versus event target value which is ${event.target.value}`);
-    console.log(`snippet is ${snippet}`)
     // need to do this with event.target.value, not userText
-    if (event.target.value === snippet) {
+    if (event.target.value === selection[0].trim()) {
       let finishTime = new Date().getTime();
       let totalTime = finishTime - gameState.startTime;
       setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime })
@@ -48,11 +46,7 @@ const Game = () => {
     }
   }
 
-  const chooseSnippet = snippetIndex => {
-    console.log('setSnippet', snippetIndex);
-    setSnippet(SNIPPETS[snippetIndex]);
-    // Once snippet is chosen, begin the game, which includes everything in the current gamestate,/
-    // but now, changing the startTime to now
+  const ready = () => {
     setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
   };
 
@@ -76,6 +70,7 @@ const Game = () => {
       let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
       console.log(randomQuote);
       setSelection([randomQuote.quote, randomQuote.author]);
+      ready();
     }
       
   }, [quotes])
@@ -89,19 +84,9 @@ const Game = () => {
       <h2>Type Race</h2>
       {gameState.readyMessage}
       <br></br><br></br>
-      Your quote to type is:
-      {selection[0]}{selection[1]}
+      <p>Your quote to type is:<br></br><span id="fadeIn">{selection[0]}<br></br>{selection[1]}</span></p>
+      
       {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText}></input> : null}
-
-      {SNIPPETS.map((each, index) => (
-        // NEED callback to call chooseSnippet
-        <button onClick={() => chooseSnippet(index)} key={index}>
-          {/* key Is used during .map so that you can have unique identifiers for 
-      all of that which you are mapping.  Index comes inherently with array */}
-          {each}
-        </button>
-      ))
-      }
 
       {gameState.victory ? <h1>Game finished in {gameState.totalTime} milliseconds</h1> : ""}
 

@@ -14,6 +14,12 @@ var ScoreSchema = new Schema({
     score: {
         type: String,
         required: true,
+    },
+
+    quote: {
+        type: Schema.Types.ObjectId,
+        ref: "Quotes",
+        required: true,
     }
 
 });

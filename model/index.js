@@ -1,4 +1,4 @@
 module.exports = {
-    Events: require("./quotes"),
-    Users: require("./scores")
+    Quotes: require("./quotes"),
+    Scores: require("./scores")
 };

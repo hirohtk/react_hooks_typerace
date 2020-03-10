@@ -44,7 +44,7 @@ const Game = () => {
   }
 
   const setup = () => {
-    console.log(`this shouldn't fire on initial mount`)
+    // randomize the index of the quotes array to select a quote
     let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     console.log(randomQuote);
     setSelection([randomQuote.quote, randomQuote.author]);
@@ -61,6 +61,14 @@ const Game = () => {
     setReplay(true);
   }
 
+  const addScore = () => {
+
+  }
+
+  const getScores = (quote) => {
+    
+  }
+
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
@@ -75,8 +83,9 @@ const Game = () => {
       firstMount.current = false;
       return;
     }
+    // if either quotes or replay state changes, then setup().  re-using this effect for initial game setup and also for resetting the game
     if (quotes || replay) {
-      // randomize the index of the quotes array to select a quote
+
       setup();
     }
 

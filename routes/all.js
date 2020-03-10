@@ -1,6 +1,6 @@
 const path = require("path");
 const router = require("express").Router();
-// const db = require("../model/index");
+const db = require("../model/index");
 
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -26,7 +26,6 @@ router.get("/scrape", function (req, res) {
 
         res.json(quoteArray);
       });
-
 });
 
 // If no API routes are hit, send the React app

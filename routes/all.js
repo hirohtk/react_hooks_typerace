@@ -25,8 +25,9 @@ router.get("/scrape", function (req, res) {
       });
 });
 
-router.get("/api", (req, res) => {
+router.get("/api/:id", (req, res) => {
   console.log("get route firing")
+  console.log(req.params.id)
   db.Quotes.findOne({quote: req.params.id}).populate("Scores")
   .then(response => {
     if (response != null) {
@@ -43,6 +44,8 @@ router.get("/api", (req, res) => {
 });
 
 router.post("/api/quote", (req, res) => {
+
+  console.log(`req.body is ${req.body}`)
 
   let poster = (quoteId) => {
     let obj = {

@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from "axios";
+import ReactDOM from 'react-dom'
+import Modal from "react-responsive-modal"
 import "./game.css"
 
 const Game = () => {
@@ -25,6 +27,10 @@ const Game = () => {
 
   const [userText, setUserText] = useState("");
 
+  const [userName, setUserName] = useState("");
+
+  const [modal, setModal] = useState(false);
+
   const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null };
 
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
@@ -39,8 +45,12 @@ const Game = () => {
       let finishTime = new Date().getTime();
       let totalTime = finishTime - gameState.startTime;
       setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime })
-      console.log(`it took you ${totalTime} to win this game`)
+      onOpenModal();
     }
+  }
+
+  const updateUserName = event => {
+    setUserName(event.target.value);
   }
 
   const setup = () => {
@@ -62,11 +72,27 @@ const Game = () => {
   }
 
   const addScore = () => {
-
+    let obj = {
+      quote: selection[0],
+      name: userName,
+      score: gameState.totalTime,
+    }
+    axios.post("/api/quote", obj).then((response) => {
+      console.log(response);
+      onCloseModal();
+    });
   }
 
   const getScores = (quote) => {
-    
+
+  }
+
+  const onOpenModal = () => {
+    setModal(true);
+  }
+
+  const onCloseModal = () => {
+    setModal(false)
   }
 
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
@@ -88,7 +114,6 @@ const Game = () => {
 
       setup();
     }
-
   }, [quotes, replay])
 
   return (
@@ -104,7 +129,12 @@ const Game = () => {
 
       {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
       <button onClick={() => reset()}>Play again?</button></div> : ""}
-
+      <Modal open={modal} onClose={onCloseModal} center>
+        Game finished in {gameState.totalTime} milliseconds.
+        <br></br>
+        Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} onChange={updateUserName}></input>
+        <button onClick={addScore}>Submit</button>
+      </Modal>
       {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW

@@ -31,6 +31,8 @@ const Game = () => {
 
   const [modal, setModal] = useState(false);
 
+  const [scores, setScores] = useState([])
+
   const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null };
 
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
@@ -57,13 +59,10 @@ const Game = () => {
     // randomize the index of the quotes array to select a quote
     let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     console.log(randomQuote);
-    //high scores 
-    axios.get(`/api/${randomQuote.quote}`).then((response) => {
-      console.log(response)
-      setSelection([randomQuote.quote, randomQuote.author]);
-      setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
-      setReplay(false);
-    })
+    setSelection([randomQuote.quote, randomQuote.author]);
+    setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
+    setReplay(false);
+    getScores(selection[0]);
   }
 
   const reset = () => {
@@ -73,6 +72,14 @@ const Game = () => {
     setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
     setUserText("");
     setReplay(true);
+  }
+
+  const getScores = (currentQuote) => {
+    axios.get(`/api/${currentQuote}`).then((response) => {
+      console.log(response)
+      setScores(response.data);
+      console.log(scores);
+    })
   }
 
   const addScore = () => {
@@ -85,10 +92,6 @@ const Game = () => {
       console.log(response);
       onCloseModal();
     });
-  }
-
-  const getScores = (currentQuote) => {
-    console.log(currentQuote);
   }
 
   const onOpenModal = () => {
@@ -115,7 +118,6 @@ const Game = () => {
     }
     // if either quotes or replay state changes, then setup().  re-using this effect for initial game setup and also for resetting the game
     if (quotes || replay) {
-
       setup();
     }
   }, [quotes, replay])
@@ -139,6 +141,15 @@ const Game = () => {
         Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} onChange={updateUserName}></input>
         <button onClick={addScore}>Submit</button>
       </Modal>
+      <div>
+        <h2>High scores:</h2>
+        <table>
+          <tr>
+            <th>Name</th><th>Score</th>
+          </tr>
+          {scores.length != 0 ? scores.map((each) => <tr><td>{each.name}</td><td>{each.score}</td></tr>) : ""}
+        </table>
+      </div>
       {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW

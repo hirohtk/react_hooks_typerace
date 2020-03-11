@@ -25,9 +25,9 @@ router.get("/scrape", function (req, res) {
       });
 });
 
-router.get("/api/:quote", (req, res) => {
+router.get("/api", (req, res) => {
   console.log("get route firing")
-  db.Quotes.findOne({quote: req.params.quote}).populate("Scores")
+  db.Quotes.findOne({quote: req.params.id}).populate("Scores")
   .then(response => {
     if (response != null) {
       console.log(response)
@@ -50,8 +50,12 @@ router.post("/api/quote", (req, res) => {
       name: req.body.name,
       score: req.body.score,
     }
+    // creating a score exactly as schema is setup.  association is handled by passing in the quoteId of the quote field
     db.Scores.create(obj).then((response) => {
-      res.json(response);
+      // when working with associations, any value for association must be entered as the associated document's ID, nothing else. 
+      // mongo seems to take care of the rest (in terms of bringing up the details of the document itself) 
+      console.log(response._id);
+      db.Quotes.findByIdAndUpdate(quoteId, {$push: {scores: response._id}}).then(response => res.json(response))
     })
   }
 

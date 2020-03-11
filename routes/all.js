@@ -25,13 +25,13 @@ router.get("/scrape", function (req, res) {
       });
 });
 
-router.get("/api/:id", (req, res) => {
+router.get("/api/:quote", (req, res) => {
   console.log("get route firing")
-  console.log(req.params.id)
-  db.Quotes.findOne({quote: req.params.id}).populate("Scores")
+  db.Quotes.findOne({quote: req.params.quote}).populate("scores")
   .then(response => {
-    if (response != null) {
-      console.log(response)
+    if (response != undefined) {
+      console.log(response);
+
       // middleware here to sort for high scores
       res.json(response);
     }

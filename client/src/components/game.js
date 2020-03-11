@@ -57,16 +57,20 @@ const Game = () => {
     // randomize the index of the quotes array to select a quote
     let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     console.log(randomQuote);
-    setSelection([randomQuote.quote, randomQuote.author]);
-    setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
-    setReplay(false);
+    //high scores 
+    axios.get(`/api/${randomQuote.quote}`).then((response) => {
+      console.log(response)
+      setSelection([randomQuote.quote, randomQuote.author]);
+      setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
+      setReplay(false);
+    })
   }
 
   const reset = () => {
     // Having so many async state setting may be a problem... need to refer back to this at some point.
     // I think the only time this may be okay is if all of these run, and only the one that matters for doing an async operation
     // to move onto the next stage can be put in a useEffect
-    setGameState({...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
+    setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
     setUserText("");
     setReplay(true);
   }
@@ -83,8 +87,8 @@ const Game = () => {
     });
   }
 
-  const getScores = (quote) => {
-
+  const getScores = (currentQuote) => {
+    console.log(currentQuote);
   }
 
   const onOpenModal = () => {
@@ -128,7 +132,7 @@ const Game = () => {
       <button onClick={() => setup()}>Get another random quote to use.</button>
 
       {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
-      <button onClick={() => reset()}>Play again?</button></div> : ""}
+        <button onClick={() => reset()}>Play again?</button></div> : ""}
       <Modal open={modal} onClose={onCloseModal} center>
         Game finished in {gameState.totalTime} milliseconds.
         <br></br>

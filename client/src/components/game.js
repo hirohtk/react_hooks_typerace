@@ -121,7 +121,7 @@ const Game = () => {
   }, [quotes, replay])
 
   return (
-    <div>
+    <div className="centerAlign">
       <h2>Type Race</h2>
       {gameState.readyMessage}
       <br></br><br></br>

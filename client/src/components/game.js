@@ -62,7 +62,7 @@ const Game = () => {
     setSelection([randomQuote.quote, randomQuote.author]);
     setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
     setReplay(false);
-    getScores(selection[0]);
+    getScores(randomQuote.quote);
   }
 
   const reset = () => {
@@ -75,9 +75,9 @@ const Game = () => {
   }
 
   const getScores = (currentQuote) => {
+    console.log(`current quote is ${currentQuote}`);
     axios.get(`/api/${currentQuote}`).then((response) => {
       console.log(response)
-      console.log(`response.data is ${response.data}`)
       setScores(response.data);
     })
   }

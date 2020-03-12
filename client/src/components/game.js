@@ -77,8 +77,8 @@ const Game = () => {
   const getScores = (currentQuote) => {
     axios.get(`/api/${currentQuote}`).then((response) => {
       console.log(response)
+      console.log(`response.data is ${response.data}`)
       setScores(response.data);
-      console.log(scores);
     })
   }
 
@@ -122,6 +122,12 @@ const Game = () => {
     }
   }, [quotes, replay])
 
+  useEffect(() => {
+
+    console.log(`useeffect Scores is ${scores}`);
+
+  }, [scores])
+
   return (
     <div className="centerAlign">
       <h2>Type Race</h2>
@@ -143,11 +149,17 @@ const Game = () => {
       </Modal>
       <div>
         <h2>High scores:</h2>
-        <table>
+        <table style={{ width: "100%" }}>
           <tr>
-            <th>Name</th><th>Score</th>
+            <th>Name</th>
+            <th>Score</th>
           </tr>
-          {scores.length != 0 ? scores.map((each) => <tr><td>{each.name}</td><td>{each.score}</td></tr>) : ""}
+          {scores.map((each) =>
+            <tr>
+              <td>{each.name}</td>
+              <td>{each.score}</td>
+            </tr>
+          )}
         </table>
       </div>
       {/* 

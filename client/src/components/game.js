@@ -31,7 +31,9 @@ const Game = () => {
 
   const [modal, setModal] = useState(false);
 
-  const [scores, setScores] = useState([])
+  const [scores, setScores] = useState([]);
+
+  const [firstRender, setFirstRender] = useState(true);
 
   const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null };
 
@@ -105,7 +107,10 @@ const Game = () => {
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
-    axios.get("/scrape").then((response) => setQuotes(response.data)
+    axios.get("/scrape").then((response) => {
+      setQuotes(response.data)
+      setFirstRender(false);
+    }
     )
   }, [])
 
@@ -124,9 +129,16 @@ const Game = () => {
 
   useEffect(() => {
 
-    console.log(`useeffect Scores is ${scores}`);
+    console.log(`useeffect Scores is ${JSON.stringify(scores)}`);
 
   }, [scores])
+
+  // const tester = (test) => {
+  //   console.log(`TESTER: ${test}`)
+  //   let b = test;
+  //   let time = (a) => console.log(`Tester 2: ${a}`);
+  //   setTimeout(time(b), 5000);
+  // }
 
   return (
     <div className="centerAlign">
@@ -149,18 +161,30 @@ const Game = () => {
       </Modal>
       <div>
         <h2>High scores:</h2>
-        <table style={{ width: "100%" }}>
-          <tr>
-            <th>Name</th>
-            <th>Score</th>
-          </tr>
-          {scores.map((each) =>
-            <tr>
-              <td>{each.name}</td>
-              <td>{each.score}</td>
-            </tr>
-          )}
-        </table>
+        {/* {tester(scores.name)} */}
+        {/* Below is bypassing scores.name because on first render, scores is an empty array */}
+        {/* 3/11/2020, scores.name is still not being interpreted correctly even though I am giving it a conditional render
+        to render only after quotes are loaded */}
+        {
+          (firstRender === false && scores.name === "No Scores yet on this quote!") ? 
+          <h2>No Scores yet on this quote</h2> : 
+          ((firstRender === false) ?
+            <table>
+              <tr>
+                <th>Name</th>
+                <th>Score</th>
+              </tr>
+              {scores.map((each) => (
+                <tr>
+                  <td>{each.name}</td>
+                  <td>{each.score}</td>
+                </tr>
+              ))}
+            </table>
+            : 
+            "")
+        }
+
       </div>
       {/* 
 

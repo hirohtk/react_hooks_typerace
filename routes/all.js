@@ -63,7 +63,7 @@ router.get("/api/:quote", (req, res) => {
       else {
         // needed to send this back as an array so that the array.map function to display scores still works on
         // (essentially giving an array with no scores)
-        res.json(["no scores yet on this quote!"])
+        res.json([{name: "No Scores yet on this quote!", score:"No Scores yet on this quote!"}])
       }
 
     })

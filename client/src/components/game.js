@@ -141,15 +141,15 @@ const Game = () => {
   // }
 
   return (
-    <div className="centerAlign">
+    <div className="container fluid">
       <h2>Type Race</h2>
       {gameState.readyMessage}
       <br></br><br></br>
       <p>Your quote to type is:<br></br><span id="fadeIn">{selection[0]}<br></br>{selection[1]}</span></p>
 
-      {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText}></input> : null}
+      {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText} autocomplete="off"></input> : null}
       <br></br>
-      <button onClick={() => setup()}>Get another random quote to use.</button>
+      {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
 
       {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
         <button onClick={() => reset()}>Play again?</button></div> : ""}
@@ -159,7 +159,7 @@ const Game = () => {
         Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} onChange={updateUserName}></input>
         <button onClick={addScore}>Submit</button>
       </Modal>
-      <div>
+      
         <h2>High scores:</h2>
         {/* {tester(scores.name)} */}
         {/* Below is bypassing scores.name because on first render, scores is an empty array */}
@@ -185,7 +185,7 @@ const Game = () => {
             "")
         }
 
-      </div>
+      
       {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW

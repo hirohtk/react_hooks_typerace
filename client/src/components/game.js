@@ -33,6 +33,8 @@ const Game = () => {
 
   const [scores, setScores] = useState([]);
 
+  const [checker, setChecker] = useState([]);
+
   const [firstRender, setFirstRender] = useState(true);
 
   const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null };
@@ -44,6 +46,7 @@ const Game = () => {
       setGameState({ ...gameState, startTime: new Date().getTime() })
     }
     setUserText(event.target.value);
+    setChecker(checkBot(event.target.value, selection[0]))
     // need to do this with event.target.value, not userText
     if (event.target.value === selection[0].trim()) {
       let finishTime = new Date().getTime();
@@ -82,6 +85,19 @@ const Game = () => {
       console.log(response)
       setScores(response.data);
     })
+  }
+
+  const checkBot = (attempt, prompt) => {
+    let arr = [];
+    for (let i = 0; i < attempt.length; i++) {
+      if (attempt[i] === prompt[i]) {
+        arr.push("+");
+      }
+      else {
+        arr.push("-");
+      }
+    }
+    return arr;
   }
 
   const addScore = () => {
@@ -147,8 +163,9 @@ const Game = () => {
       <br></br><br></br>
       <p>Your quote to type is:<br></br><span id="fadeIn">{selection[0]}<br></br>{selection[1]}</span></p>
 
-      {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText} autocomplete="off"></input> : null}
+      {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText} autocomplete="off" size={selection[0].length}></input> : null}
       <br></br>
+      <p>{checker}</p>
       {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
 
       {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>

@@ -30,3 +30,11 @@ table, th, td {
     
     
 }
+
+.err {
+background-color: pink;
+}
+
+.correct {
+    background-color: greenyellow
+}

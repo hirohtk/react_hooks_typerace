@@ -76,6 +76,7 @@ const Game = () => {
     // to move onto the next stage can be put in a useEffect
     setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
     setUserText("");
+    setChecker("");
     setReplay(true);
   }
 
@@ -89,14 +90,16 @@ const Game = () => {
 
   const checkBot = (attempt, prompt) => {
     let arr = [];
+    // ***THIS ENTIRE FOR LOOP RUNS EVERY SINGLE TIME A NEW LETTER IS INPUT
     for (let i = 0; i < attempt.length; i++) {
       if (attempt[i] === prompt[i]) {
-        arr.push("+");
+        arr.push(attempt[i]);
       }
       else {
-        arr.push("-");
+        arr.push("_");
       }
     }
+    // ONCE DONE, RETURNS A *BRAND NEW* ARRAY EACH TIME SHOWING MISTAKES OR CORRECT CHARACTERS.
     return arr;
   }
 
@@ -165,7 +168,9 @@ const Game = () => {
 
       {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText} autocomplete="off" size={selection[0].length}></input> : null}
       <br></br>
-      <p>{checker}</p>
+      {/* if you have two characters, the array will render two each's, and so forth */}
+      <p style={{position: "relative", left: "2px"}}>{checker.map((each) => each.includes("_")? <span className="err">{each}</span>: <span className="correct">{each}</span>)}</p>
+      {/* <p>{checker}</p> */}
       {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
 
       {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>

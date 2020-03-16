@@ -26,9 +26,8 @@ table, th, td {
     /* margin: 0 auto; */
   }
 
-#textbox {
-    
-    
+.gold {
+    background-color: gold;
 }
 
 .err {

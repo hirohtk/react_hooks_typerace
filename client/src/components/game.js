@@ -81,6 +81,7 @@ const Game = () => {
     setUserText("");
     setChecker("");
     setReplay(true);
+    localStorage.clear();
   }
 
   const getScores = (currentQuote) => {
@@ -111,10 +112,12 @@ const Game = () => {
       quote: selection[0],
       name: userName,
       score: gameState.totalTime,
-    }
+    }    
     axios.post("/api/quote", obj).then((response) => {
       console.log(response);
       onCloseModal();
+      localStorage.setItem("currentName", obj.name);
+      localStorage.setItem("currentScore", obj.score);
       getScores(selection[0]);
     });
   }
@@ -227,14 +230,14 @@ const Game = () => {
             <table>
               <tr>
                 <th>Name</th>
-                <th>Score</th>
+                <th>Score (milliseconds)</th>
               </tr>
-              {scores.map((each) => (
-                <tr>
-                  <td>{each.name}</td>
-                  <td>{each.score}</td>
-                </tr>
-              ))}
+              {scores.map((each) => 
+                  each.name === localStorage.currentName && each.score === localStorage.currentScore ? 
+                    <tr><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr> 
+                    : 
+                    <tr><td>{each.name}</td> <td>{each.score}</td></tr>
+              )}
             </table>
             :
             "")

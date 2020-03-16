@@ -52,7 +52,7 @@ const Game = () => {
     if (event.target.value === selection[0].trim()) {
       let finishTime = new Date().getTime();
       let totalTime = finishTime - gameState.startTime;
-      setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime, timer:false })
+      setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime, timer: false })
       onOpenModal();
     }
   }
@@ -75,7 +75,7 @@ const Game = () => {
     // Having so many async state setting may be a problem... need to refer back to this at some point.
     // I think the only time this may be okay is if all of these run, and only the one that matters for doing an async operation
     // to move onto the next stage can be put in a useEffect
-    setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: ""});
+    setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
     setUserText("");
     setChecker("");
     setReplay(true);
@@ -113,6 +113,7 @@ const Game = () => {
     axios.post("/api/quote", obj).then((response) => {
       console.log(response);
       onCloseModal();
+      getScores(selection[0]);
     });
   }
 
@@ -121,7 +122,7 @@ const Game = () => {
   }
 
   const onCloseModal = () => {
-    setModal(false)
+    setModal(false);
   }
 
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
@@ -173,25 +174,25 @@ const Game = () => {
             value={userText} onChange={updateUserText} autocomplete="off" size={selection[0].length}>
           </input>
           <br></br>
-          {gameState.timer === true ? 
-          <Timer
-              startImmediately={false}>
-                
-                 {({ start, resume, pause, stop, reset, timerState }) => (
-                <React.Fragment>
-              <Timer.Seconds /> seconds have elapsed!
+          {gameState.timer === true ?
+            <div>
+              <Timer
+                startImmediately={false}>
+                {({ start, resume, pause, stop, reset, timerState }) => (
+                  <React.Fragment>
+                    <Timer.Seconds /> seconds have elapsed!
                 {start()}
-                </React.Fragment>
-                 )}
-                 
-          </Timer>
-           : ""}
+                  </React.Fragment>
+                )}
+              </Timer>
+              {/*  if you have two characters, the array will render two each's, and so forth */}
+              <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
+            </div>
+            : ""}
         </div>
         : null}
       <br></br>
-      {/* if you have two characters, the array will render two each's, and so forth */}
-      <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
-      {/* <p>{checker}</p> */}
+
       {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
 
       {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>

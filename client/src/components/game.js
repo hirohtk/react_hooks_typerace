@@ -3,6 +3,7 @@ import axios from "axios";
 import ReactDOM from 'react-dom'
 import Modal from "react-responsive-modal"
 import "./game.css"
+import Timer from "react-compound-timer"
 
 const Game = () => {
 
@@ -43,7 +44,7 @@ const Game = () => {
 
   const updateUserText = event => {
     if (gameState.startTime === null) {
-      setGameState({ ...gameState, startTime: new Date().getTime() })
+      setGameState({ ...gameState, startTime: new Date().getTime(), timer: true })
     }
     setUserText(event.target.value);
     setChecker(checkBot(event.target.value, selection[0]))
@@ -51,7 +52,7 @@ const Game = () => {
     if (event.target.value === selection[0].trim()) {
       let finishTime = new Date().getTime();
       let totalTime = finishTime - gameState.startTime;
-      setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime })
+      setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime, timer:false })
       onOpenModal();
     }
   }
@@ -74,7 +75,7 @@ const Game = () => {
     // Having so many async state setting may be a problem... need to refer back to this at some point.
     // I think the only time this may be okay is if all of these run, and only the one that matters for doing an async operation
     // to move onto the next stage can be put in a useEffect
-    setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
+    setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: ""});
     setUserText("");
     setChecker("");
     setReplay(true);
@@ -166,10 +167,30 @@ const Game = () => {
       <br></br><br></br>
       <p>Your quote to type is:<br></br><span id="fadeIn">{selection[0]}<br></br>{selection[1]}</span></p>
 
-      {gameState.prepared === true ? <input id="textbox" value={userText} onChange={updateUserText} autocomplete="off" size={selection[0].length}></input> : null}
+      {gameState.prepared === true ?
+        <div>
+          <input id="textbox"
+            value={userText} onChange={updateUserText} autocomplete="off" size={selection[0].length}>
+          </input>
+          <br></br>
+          {gameState.timer === true ? 
+          <Timer
+              startImmediately={false}>
+                
+                 {({ start, resume, pause, stop, reset, timerState }) => (
+                <React.Fragment>
+              <Timer.Seconds /> seconds have elapsed!
+                {start()}
+                </React.Fragment>
+                 )}
+                 
+          </Timer>
+           : ""}
+        </div>
+        : null}
       <br></br>
       {/* if you have two characters, the array will render two each's, and so forth */}
-      <p style={{position: "relative", left: "2px"}}>{checker.map((each) => each.includes("_")? <span className="err">{each}</span>: <span className="correct">{each}</span>)}</p>
+      <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
       {/* <p>{checker}</p> */}
       {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
 
@@ -181,15 +202,15 @@ const Game = () => {
         Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} onChange={updateUserName}></input>
         <button onClick={addScore}>Submit</button>
       </Modal>
-      
-        <h2>High scores:</h2>
-        {/* {tester(scores.name)} */}
-        {/* Below is bypassing scores.name because on first render, scores is an empty array */}
-        {/* 3/11/2020, scores.name is still not being interpreted correctly even though I am giving it a conditional render
+
+      <h2>High scores:</h2>
+      {/* {tester(scores.name)} */}
+      {/* Below is bypassing scores.name because on first render, scores is an empty array */}
+      {/* 3/11/2020, scores.name is still not being interpreted correctly even though I am giving it a conditional render
         to render only after quotes are loaded */}
-        {
-          (firstRender === false && scores.name === "No Scores yet on this quote!") ? 
-          <h2>No Scores yet on this quote</h2> : 
+      {
+        (firstRender === false && scores.name === "No Scores yet on this quote!") ?
+          <h2>No Scores yet on this quote</h2> :
           ((firstRender === false) ?
             <table>
               <tr>
@@ -203,11 +224,11 @@ const Game = () => {
                 </tr>
               ))}
             </table>
-            : 
+            :
             "")
-        }
+      }
 
-      
+
       {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW

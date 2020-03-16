@@ -47,7 +47,8 @@ const Game = () => {
       setGameState({ ...gameState, startTime: new Date().getTime(), timer: true })
     }
     setUserText(event.target.value);
-    setChecker(checkBot(event.target.value, selection[0]))
+    setChecker(checkBot(event.target.value, selection[0]));
+
     // need to do this with event.target.value, not userText
     if (event.target.value === selection[0].trim()) {
       let finishTime = new Date().getTime();
@@ -67,6 +68,7 @@ const Game = () => {
     console.log(randomQuote);
     setSelection([randomQuote.quote, randomQuote.author]);
     setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
+
     setReplay(false);
     getScores(randomQuote.quote);
   }
@@ -125,6 +127,13 @@ const Game = () => {
     setModal(false);
   }
 
+  const antiCheat = (a) => {
+    a.onpaste = e => {
+      e.preventDefault();
+      return false;
+    };
+  }
+
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
@@ -149,10 +158,16 @@ const Game = () => {
   }, [quotes, replay])
 
   useEffect(() => {
-
-    console.log(`useeffect Scores is ${JSON.stringify(scores)}`);
-
-  }, [scores])
+    if (firstMount.current === true) {
+      console.log(`not doing anything`)
+      firstMount.current = false;
+      return;
+    }
+    if (gameState.prepared) {
+      let pasteBox = document.getElementById("textbox");
+      antiCheat(pasteBox);
+    }
+  }, [gameState.prepared])
 
   // const tester = (test) => {
   //   console.log(`TESTER: ${test}`)
@@ -205,10 +220,6 @@ const Game = () => {
       </Modal>
 
       <h2>High scores:</h2>
-      {/* {tester(scores.name)} */}
-      {/* Below is bypassing scores.name because on first render, scores is an empty array */}
-      {/* 3/11/2020, scores.name is still not being interpreted correctly even though I am giving it a conditional render
-        to render only after quotes are loaded */}
       {
         (firstRender === false && scores.name === "No Scores yet on this quote!") ?
           <h2>No Scores yet on this quote</h2> :
@@ -228,8 +239,6 @@ const Game = () => {
             :
             "")
       }
-
-
       {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW

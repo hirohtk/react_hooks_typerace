@@ -28,6 +28,16 @@ table, th, td {
 
 .gold {
     background-color: gold;
+    -webkit-animation: blink 1s 10s;
+}
+
+@-webkit-keyframes blink {
+    0% {
+        background-color: gold;
+    }
+    100% {
+        background-color: white
+    }
 }
 
 .err {

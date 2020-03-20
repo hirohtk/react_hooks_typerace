@@ -54,6 +54,7 @@ const Game = () => {
       let finishTime = new Date().getTime();
       let totalTime = finishTime - gameState.startTime;
       setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime, timer: false })
+      setUserText("");
       onOpenModal();
     }
   }
@@ -79,6 +80,7 @@ const Game = () => {
     // to move onto the next stage can be put in a useEffect
     setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
     setUserText("");
+    setUserName("");
     setChecker("");
     setReplay(true);
     localStorage.clear();
@@ -186,7 +188,7 @@ const Game = () => {
       <br></br><br></br>
       <p>Your quote to type is:<br></br><span id="fadeIn">{selection[0]}<br></br>{selection[1]}</span></p>
 
-      {gameState.prepared === true ?
+      {gameState.prepared === true && gameState.victory === false ?
         <div>
           <input id="textbox"
             value={userText} onChange={updateUserText} autocomplete="off" size={selection[0].length}>

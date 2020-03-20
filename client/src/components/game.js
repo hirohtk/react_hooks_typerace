@@ -191,7 +191,7 @@ const Game = () => {
       {gameState.prepared === true && gameState.victory === false ?
         <div>
           <input id="textbox"
-            value={userText} onChange={updateUserText} autocomplete="off" size={selection[0].length}>
+            value={userText} onChange={updateUserText} autocomplete="off" size={selection[0].length} maxlength={selection[0].length}>
           </input>
           <br></br>
           {gameState.timer === true ?
@@ -214,6 +214,7 @@ const Game = () => {
       <br></br>
 
       {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
+      <br></br>
 
       {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
         <button onClick={() => reset()}>Play again?</button></div> : ""}

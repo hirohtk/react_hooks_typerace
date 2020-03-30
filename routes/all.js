@@ -5,20 +5,36 @@ const db = require("../model/index");
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-router.get("/scrape", function (req, res) {
+// router.get("/scrape", function (req, res) {
 
-  axios.get("http://www.famousquotesandauthors.com/topics/sea_quotes.html").then((response) => {
+//   axios.get("http://www.famousquotesandauthors.com/topics/sea_quotes.html").then((response) => {
+
+//     let quoteArray = [];
+
+//     let $ = cheerio.load(response.data);
+
+//     // THIS IS ESSENTAILLY A FOR LOOP, making a new result object for every headline
+//     $("div[style~='font-size:12px;font-family:Arial;']").each(function (i, element) {
+//       let quote = {
+//         quote: $(element).text(),
+//         author: $(element).next().text()
+//       }
+//       quoteArray.push(quote);
+//     });
+//     res.json(quoteArray);
+//   });
+// });
+
+router.get("/scrape", function (req, res) {
+  axios.get("https://www.universalclass.com/articles/self-help/keyboarding-practice-sentence-repetition.htm").then((response) => {
 
     let quoteArray = [];
 
     let $ = cheerio.load(response.data);
 
     // THIS IS ESSENTAILLY A FOR LOOP, making a new result object for every headline
-    $("div[style~='font-size:12px;font-family:Arial;']").each(function (i, element) {
-      let quote = {
-        quote: $(element).text(),
-        author: $(element).next().text()
-      }
+    $("span[style*='font-size: 12pt; font-style: normal']").each(function (i, element) {
+      let quote = $(element).text();
       quoteArray.push(quote);
     });
     res.json(quoteArray);

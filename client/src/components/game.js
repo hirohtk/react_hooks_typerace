@@ -67,7 +67,7 @@ const Game = () => {
     // randomize the index of the quotes array to select a quote
     let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     console.log(randomQuote);
-    setSelection([randomQuote.quote, randomQuote.author]);
+    setSelection([randomQuote.quote]);
     setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
 
     setReplay(false);
@@ -174,12 +174,6 @@ const Game = () => {
     }
   }, [gameState.prepared])
 
-  // const tester = (test) => {
-  //   console.log(`TESTER: ${test}`)
-  //   let b = test;
-  //   let time = (a) => console.log(`Tester 2: ${a}`);
-  //   setTimeout(time(b), 5000);
-  // }
 
   return (
     <div className="container fluid">
@@ -190,7 +184,7 @@ const Game = () => {
         <div className="card-body">
           <blockquote className="blockquote mb-0">
           <p>Your quote to type is:<br></br><span id="quote">{selection[0]}<br></br></span></p>
-            <footer className=""><cite title="Source Title">{selection[1]}</cite></footer>
+            {/* <footer className=""><cite title="Source Title">{selection[1]}</cite></footer> */}
           </blockquote>
         </div>
       </div>

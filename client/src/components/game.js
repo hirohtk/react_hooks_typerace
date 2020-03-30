@@ -114,7 +114,7 @@ const Game = () => {
       quote: selection[0],
       name: userName,
       score: gameState.totalTime,
-    }    
+    }
     axios.post("/api/quote", obj).then((response) => {
       console.log(response);
       onCloseModal();
@@ -183,10 +183,18 @@ const Game = () => {
 
   return (
     <div className="container fluid">
-      <h2>Type Race</h2>
+      <h2 className="centerAlign">Type Race</h2>
       {gameState.readyMessage}
       <br></br><br></br>
-      <p>Your quote to type is:<br></br><span id="fadeIn">{selection[0]}<br></br>{selection[1]}</span></p>
+      <div className="card">
+        <div className="card-body">
+          <blockquote className="blockquote mb-0">
+          <p>Your quote to type is:<br></br><span id="quote">{selection[0]}<br></br></span></p>
+            <footer className="blockquote-footer"><cite title="Source Title">{selection[1]}</cite></footer>
+          </blockquote>
+        </div>
+      </div>
+      
 
       {gameState.prepared === true && gameState.victory === false ?
         <div>
@@ -212,7 +220,7 @@ const Game = () => {
         </div>
         : null}
       <br></br>
-
+      <br></br>
       {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
       <br></br>
 
@@ -221,25 +229,25 @@ const Game = () => {
       <Modal open={modal} onClose={onCloseModal} center>
         Game finished in {gameState.totalTime} milliseconds.
         <br></br>
-        Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} onChange={updateUserName}></input>
+        Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} maxlength="16" onChange={updateUserName}></input>
         <button onClick={addScore}>Submit</button>
       </Modal>
 
-      <h2>High scores:</h2>
+      <h2 className="centerAlign">High scores on this quote:</h2>
       {
         (firstRender === false && scores.name === "No Scores yet on this quote!") ?
-          <h2>No Scores yet on this quote</h2> :
+          <h2 className="centerAlign">No Scores yet on this quote</h2> :
           ((firstRender === false) ?
-            <table>
+            <table >
               <tr>
                 <th>Name</th>
                 <th>Score (milliseconds)</th>
               </tr>
-              {scores.map((each) => 
-                  each.name === localStorage.currentName && each.score === localStorage.currentScore ? 
-                    <tr><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr> 
-                    : 
-                    <tr><td>{each.name}</td> <td>{each.score}</td></tr>
+              {scores.map((each) =>
+                each.name === localStorage.currentName && each.score === localStorage.currentScore ?
+                  <tr><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
+                  :
+                  <tr><td>{each.name}</td> <td>{each.score}</td></tr>
               )}
             </table>
             :

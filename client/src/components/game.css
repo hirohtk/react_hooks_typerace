@@ -1,42 +1,28 @@
-#fadeIn {
-    -webkit-animation: fadeIn 1s;
-    opacity: 1;
-}
-
-@-webkit-keyframes fadeIn {
-    0% {
-        opacity: 0;
-        
-    }
-    100% {
-        
-        opacity: 1;
-    }
-}
-
 .centerAlign {
     text-align: center;
-    
 }
 
 table, th, td {
     border: 1px solid black;
     border-collapse: collapse;
     width: 50%;
-    /* margin: 0 auto; */
+    margin: 0 auto;
   }
 
 .gold {
     background-color: gold;
-    -webkit-animation: blink 1s 10s;
+    animation: finish 0.9s infinite;
 }
 
-@-webkit-keyframes blink {
+@keyframes finish {
     0% {
+        background-color: rgb(255, 248, 208);
+    }
+    50% {
         background-color: gold;
     }
     100% {
-        background-color: white
+        background-color: rgb(255, 248, 208);
     }
 }
 
@@ -46,4 +32,9 @@ background-color: pink;
 
 .correct {
     background-color: greenyellow
+}
+
+#quote {
+    font-size: 1rem;
+    font-weight: bolder;
 }

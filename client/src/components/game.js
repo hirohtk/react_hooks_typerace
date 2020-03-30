@@ -190,11 +190,12 @@ const Game = () => {
         <div className="card-body">
           <blockquote className="blockquote mb-0">
           <p>Your quote to type is:<br></br><span id="quote">{selection[0]}<br></br></span></p>
-            <footer className="blockquote-footer"><cite title="Source Title">{selection[1]}</cite></footer>
+            <footer className=""><cite title="Source Title">{selection[1]}</cite></footer>
           </blockquote>
         </div>
       </div>
       
+      <br></br>
 
       {gameState.prepared === true && gameState.victory === false ?
         <div>
@@ -220,7 +221,7 @@ const Game = () => {
         </div>
         : null}
       <br></br>
-      <br></br>
+      
       {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
       <br></br>
 

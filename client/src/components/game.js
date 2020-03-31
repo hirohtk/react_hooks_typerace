@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import Modal from "react-responsive-modal"
 import "./game.css"
 import Timer from "react-compound-timer"
+import Nav from './nav'
 
 const Game = () => {
 
@@ -189,8 +190,9 @@ const Game = () => {
 
 
   return (
+    <div>
+    <Nav></Nav>
     <div className="container fluid">
-      <h2 className="centerAlign">Type Race</h2>
       {gameState.readyMessage}
       <br></br><br></br>
       <div className="card">
@@ -273,6 +275,7 @@ const Game = () => {
       called in props or inside the function itself
       
       */}
+    </div>
     </div>
   )
 }

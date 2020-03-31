@@ -5,23 +5,55 @@ const db = require("../model/index");
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-router.get("/scrape", function (req, res) {
+// router.get("/scrape", function (req, res) {
 
-  axios.get("http://www.famousquotesandauthors.com/topics/sea_quotes.html").then((response) => {
+//   axios.get("http://www.famousquotesandauthors.com/topics/sea_quotes.html").then((response) => {
+
+//     let quoteArray = [];
+
+//     let $ = cheerio.load(response.data);
+
+//     // THIS IS ESSENTAILLY A FOR LOOP, making a new result object for every headline
+//     $("div[style~='font-size:12px;font-family:Arial;']").each(function (i, element) {
+//       let quote = {
+//         quote: $(element).text(),
+//         author: $(element).next().text()
+//       }
+//       quoteArray.push(quote);
+//     });
+//     res.json(quoteArray);
+//   });
+// });
+
+router.get("/scrape", function (req, res) {
+  axios.get("https://www.universalclass.com/articles/self-help/keyboarding-practice-sentence-repetition.htm").then((response) => {
 
     let quoteArray = [];
 
     let $ = cheerio.load(response.data);
 
     // THIS IS ESSENTAILLY A FOR LOOP, making a new result object for every headline
-    $("div[style~='font-size:12px;font-family:Arial;']").each(function (i, element) {
-      let quote = {
-        quote: $(element).text(),
-        author: $(element).next().text()
-      }
+    $("span[style*='font-size: 12pt; font-style: normal']").each(function (i, element) {
+      let quote = $(element).text();
       quoteArray.push(quote);
     });
-    res.json(quoteArray);
+
+    let func1 = (arr) => {
+      let newArr = [];
+      for (let i = 0; i < arr.length; i++) {
+        // .splice CHANGES THE ARRAY BEFORE MOVING ONTO THE NEXT ITERATION 
+          arr.splice(i + 1, 1);
+      }
+      for (let j = 0; j < arr.length; j++) {
+        // regex:  replace all numbers with nothing (DOESNT WORK IF THERE ARE NUMBERS IN THE MIDDLE THOUGH)
+        // let numRemoved = arr[j].replace(/[0-9]/g, '').slice(1).trim()
+        let numRemoved = arr[j].slice(3).trim()
+        newArr.push(numRemoved);
+      }
+      return newArr;
+    }
+
+    res.json(func1(quoteArray));
   });
 });
 

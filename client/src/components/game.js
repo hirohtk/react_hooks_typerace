@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom'
 import Modal from "react-responsive-modal"
 import "./game.css"
 import Timer from "react-compound-timer"
+import Nav from './nav'
 
 const Game = () => {
 
@@ -19,6 +20,8 @@ const Game = () => {
 
   // FOR FIRING USEEFFECTS THAT SHOULD NOT FIRE ON THE FIRST RENDER
   const firstMount = useRef(true);
+
+  const [prevQuote, setprevQuote] = useState("");
 
   const [quotes, setQuotes] = useState([]);
 
@@ -64,14 +67,26 @@ const Game = () => {
   }
 
   const setup = () => {
-    // randomize the index of the quotes array to select a quote
-    let randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    // randomize the index of the quotes array to select a quote (excluding previous quote that user just had)
+    let randomQuote;
+    if (prevQuote === "") {
+      randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+    }
+    else {
+      // whatever prevQuote is, splice it out of the quotes array
+      quotes.splice(quotes.indexOf(prevQuote), 1);
+      randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      
+    }
     console.log(randomQuote);
-    setSelection([randomQuote.quote, randomQuote.author]);
+    // setSelection([randomQuote.quote]);
+    setSelection([randomQuote]);
+    setprevQuote(randomQuote);
     setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
 
     setReplay(false);
-    getScores(randomQuote.quote);
+    // getScores(randomQuote.quote);
+    getScores(randomQuote);
   }
 
   const reset = () => {
@@ -87,7 +102,6 @@ const Game = () => {
   }
 
   const getScores = (currentQuote) => {
-    console.log(`current quote is ${currentQuote}`);
     axios.get(`/api/${currentQuote}`).then((response) => {
       console.log(response)
       setScores(response.data);
@@ -174,23 +188,18 @@ const Game = () => {
     }
   }, [gameState.prepared])
 
-  // const tester = (test) => {
-  //   console.log(`TESTER: ${test}`)
-  //   let b = test;
-  //   let time = (a) => console.log(`Tester 2: ${a}`);
-  //   setTimeout(time(b), 5000);
-  // }
 
   return (
+    <div>
+    <Nav></Nav>
     <div className="container fluid">
-      <h2 className="centerAlign">Type Race</h2>
       {gameState.readyMessage}
       <br></br><br></br>
       <div className="card">
         <div className="card-body">
           <blockquote className="blockquote mb-0">
           <p>Your quote to type is:<br></br><span id="quote">{selection[0]}<br></br></span></p>
-            <footer className=""><cite title="Source Title">{selection[1]}</cite></footer>
+            {/* <footer className=""><cite title="Source Title">{selection[1]}</cite></footer> */}
           </blockquote>
         </div>
       </div>
@@ -200,7 +209,7 @@ const Game = () => {
       {gameState.prepared === true && gameState.victory === false ?
         <div>
           <input id="textbox"
-            value={userText} onChange={updateUserText} autocomplete="off" size={selection[0].length} maxlength={selection[0].length}>
+            value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length} maxLength={selection[0].length}>
           </input>
           <br></br>
           {gameState.timer === true ?
@@ -240,16 +249,18 @@ const Game = () => {
           <h2 className="centerAlign">No Scores yet on this quote</h2> :
           ((firstRender === false) ?
             <table >
+              <tbody>
               <tr>
                 <th>Name</th>
                 <th>Score (milliseconds)</th>
               </tr>
-              {scores.map((each) =>
+              {scores.map((each, index) =>
                 each.name === localStorage.currentName && each.score === localStorage.currentScore ?
-                  <tr><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
+                  <tr key={index}><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
                   :
-                  <tr><td>{each.name}</td> <td>{each.score}</td></tr>
+                  <tr key={index}><td>{each.name}</td><td>{each.score}</td></tr>
               )}
+              </tbody>
             </table>
             :
             "")
@@ -264,6 +275,7 @@ const Game = () => {
       called in props or inside the function itself
       
       */}
+    </div>
     </div>
   )
 }

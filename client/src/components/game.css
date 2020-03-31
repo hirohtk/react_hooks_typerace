@@ -11,18 +11,19 @@ table, th, td {
 
 .gold {
     background-color: gold;
-    animation: finish 0.9s infinite;
+    animation: finish 1s;
+    animation-iteration-count: 3;
 }
 
 @keyframes finish {
     0% {
-        background-color: rgb(255, 248, 208);
-    }
-    50% {
         background-color: gold;
     }
-    100% {
+    50% {
         background-color: rgb(255, 248, 208);
+    }
+    100% {
+        background-color: gold;
     }
 }
 

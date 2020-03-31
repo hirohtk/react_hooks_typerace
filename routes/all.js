@@ -37,7 +37,16 @@ router.get("/scrape", function (req, res) {
       let quote = $(element).text();
       quoteArray.push(quote);
     });
-    res.json(quoteArray);
+
+    let func1 = (arr) => {
+      for (let i = 0; i < arr.length; i++) {
+        // .splice CHANGES THE ARRAY BEFORE MOVING ONTO THE NEXT ITERATION 
+          arr.splice(i + 1, 1);
+      }
+      return arr;
+    }
+
+    res.json(func1(quoteArray));
   });
 });
 

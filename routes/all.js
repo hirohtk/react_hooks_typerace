@@ -39,11 +39,16 @@ router.get("/scrape", function (req, res) {
     });
 
     let func1 = (arr) => {
+      let newArr = [];
       for (let i = 0; i < arr.length; i++) {
         // .splice CHANGES THE ARRAY BEFORE MOVING ONTO THE NEXT ITERATION 
           arr.splice(i + 1, 1);
       }
-      return arr;
+      for (let j = 0; j < arr.length; j++) {
+        let numRemoved = arr[j].replace(/[0-9]/g, '').slice(1).trim()
+        newArr.push(numRemoved);
+      }
+      return newArr;
     }
 
     res.json(func1(quoteArray));

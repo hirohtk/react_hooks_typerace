@@ -45,6 +45,7 @@ router.get("/scrape", function (req, res) {
           arr.splice(i + 1, 1);
       }
       for (let j = 0; j < arr.length; j++) {
+        // regex:  replace all numbers with nothing
         let numRemoved = arr[j].replace(/[0-9]/g, '').slice(1).trim()
         newArr.push(numRemoved);
       }

@@ -67,16 +67,23 @@ const Game = () => {
   }
 
   const setup = () => {
-    // randomize the index of the quotes array to select a quote (excluding previous quote that user just had)
+    // randomize the index of the quotes array to select a quote (always excluding previous quote that user just had)
     let randomQuote;
     if (prevQuote === "") {
       randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     }
     else {
       // whatever prevQuote is, splice it out of the quotes array
-      quotes.splice(quotes.indexOf(prevQuote), 1);
-      randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-      
+      // splicing directly removes quotes from quote (which is a stateful variable)
+      // so setting a new variable each time this fires, so the quotes array doesn't run out of quotes
+      // ALSO FINDING THAT you can't just set a new varaible equal to a state variable, or else state changes
+      let tempQuotes = [];
+      for (let i = 0; i < quotes.length; i++) {
+        tempQuotes.push(quotes[i]);
+      }
+      tempQuotes.splice(tempQuotes.indexOf(prevQuote), 1);
+      randomQuote = tempQuotes[Math.floor(Math.random() * tempQuotes.length)];
+      console.log(`is quotes getting smaller? ${tempQuotes}`)
     }
     console.log(randomQuote);
     // setSelection([randomQuote.quote]);
@@ -239,7 +246,7 @@ const Game = () => {
       <Modal open={modal} onClose={onCloseModal} center>
         Game finished in {gameState.totalTime} milliseconds.
         <br></br>
-        Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} maxlength="16" onChange={updateUserName}></input>
+        Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} maxLength="16" onChange={updateUserName}></input>
         <button onClick={addScore}>Submit</button>
       </Modal>
 

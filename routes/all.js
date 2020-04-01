@@ -177,9 +177,11 @@ router.post("/login", function (req, res) {
 });
 
 router.get("/register", function (req, res) {
-  db.Users.register({ username: 'paul', active: false }, 'paul');
-  db.Users.register({ username: 'jay', active: false }, 'jay');
-  db.Users.register({ username: 'roy', active: false }, 'roy');
+  db.Users.register({ username: '222'}, 'man', (err) => {
+    if (err) {
+      console.log("error", err);
+    }
+  });
   res.json("Users created")
 });
 

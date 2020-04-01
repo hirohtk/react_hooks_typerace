@@ -18,7 +18,11 @@ const UserSchema = new Schema({
 
 });
 
+// THIS IS WHAT CREATES LOCAL STRATEGY 
 UserSchema.plugin(passportLocalMongoose);
+// THIS IS WHAT CREATES LOCAL STRATEGY 
+
 var Users = mongoose.model("Users", UserSchema);
 
+// exporting it with local strategy
 module.exports = Users;

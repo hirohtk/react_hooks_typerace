@@ -150,10 +150,9 @@ router.post("/api/quote", (req, res) => {
   }).catch(err => res.json(err))
 });
 
-router.post("/login", function (req, res) {
+router.post("/login", (req, res, next) => {
   /* PASSPORT LOCAL AUTHENTICATION */
-  // exported db.Users-this is the mongoose model
-
+  console.log(`trying to login`)
   passport.authenticate("local", (err, user, info) => {
     if (err) {
       return next(err);
@@ -161,6 +160,7 @@ router.post("/login", function (req, res) {
 
     // authentication failure:
     if (!user) {
+      console.log("failure")
       return res.redirect('/login?info=' + info);
     }
     // authentication success:
@@ -168,16 +168,15 @@ router.post("/login", function (req, res) {
       if (err) {
         return next(err);
       }
-
+      console.log("success!")
       return res.redirect('/');
     });
 
   })(req, res, next);
-
 });
 
 router.get("/register", function (req, res) {
-  db.Users.register({ username: '222'}, 'man', (err) => {
+  db.Users.register({ username: 'test'}, '12345', (err) => {
     if (err) {
       console.log("error", err);
     }

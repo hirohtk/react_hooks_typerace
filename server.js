@@ -29,17 +29,17 @@ mongoose.connect(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(expressSession);
+/*  PASSPORT SETUP  */
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(routes);
 
 // Serve up static assets (usually on heroku)
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 }
-
-/*  PASSPORT SETUP  */
-
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Start the server
 app.listen(PORT, function() {

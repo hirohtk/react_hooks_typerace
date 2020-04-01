@@ -1,4 +1,5 @@
 module.exports = {
     Quotes: require("./quotes"),
-    Scores: require("./scores")
+    Scores: require("./scores"),
+    Users: require("./users")
 };

@@ -5,6 +5,17 @@ const db = require("../model/index");
 const axios = require("axios");
 const cheerio = require("cheerio");
 
+const passport = require("passport");
+
+// THIS EITHER NEEDS TO BE HERE OR IN SERVER, WE'LL SEE
+passport.use(db.Users.createStrategy());
+passport.serializeUser(db.Users.serializeUser());
+passport.deserializeUser(db.Users.deserializeUser());
+// THIS EITHER NEEDS TO BE HERE OR IN SERVER, WE'LL SEE
+
+// /The connect-ensure-login package is middleware that ensures a user is logged in.
+const connectEnsureLogin = require("connect-ensure-login");
+
 // router.get("/scrape", function (req, res) {
 
 //   axios.get("http://www.famousquotesandauthors.com/topics/sea_quotes.html").then((response) => {
@@ -42,7 +53,7 @@ router.get("/scrape", function (req, res) {
       let newArr = [];
       for (let i = 0; i < arr.length; i++) {
         // .splice CHANGES THE ARRAY BEFORE MOVING ONTO THE NEXT ITERATION 
-          arr.splice(i + 1, 1);
+        arr.splice(i + 1, 1);
       }
       for (let j = 0; j < arr.length; j++) {
         // regex:  replace all numbers with nothing (DOESNT WORK IF THERE ARE NUMBERS IN THE MIDDLE THOUGH)
@@ -95,7 +106,7 @@ router.get("/api/:quote", (req, res) => {
       else {
         // needed to send this back as an array so that the array.map function to display scores still works on
         // (essentially giving an array with no scores)
-        res.json([{name: "No Scores yet on this quote!", score:"No Scores yet on this quote!"}])
+        res.json([{ name: "No Scores yet on this quote!", score: "No Scores yet on this quote!" }])
       }
 
     })
@@ -137,6 +148,44 @@ router.post("/api/quote", (req, res) => {
       })
     }
   }).catch(err => res.json(err))
+});
+
+router.post("/login", (req, res, next) => {
+  /* PASSPORT LOCAL AUTHENTICATION */
+  console.log(`trying to login`)
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+
+    // authentication failure:
+    if (!user) {
+      console.log("failure")
+      return res.redirect('/login?info=' + info);
+    }
+    // authentication success:
+    req.logIn(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+      console.log("success!")
+      return res.redirect('/');
+    });
+
+  })(req, res, next);
+});
+
+router.get("/register", function (req, res) {
+  db.Users.register({ username: 'test'}, '12345', (err) => {
+    if (err) {
+      console.log("error", err);
+    }
+  });
+  res.json("Users created")
+});
+
+router.get("/private", connectEnsureLogin.ensureLoggedIn(), function (req, res) {
+  res.json("Login Success")
 });
 
 // If no API routes are hit, send the React app

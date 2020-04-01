@@ -24,12 +24,16 @@
   "homepage": "https://github.com/hirohtk/react_hooks_typerace#readme",
   "dependencies": {
     "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "concurrently": "^5.1.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "i": "^0.3.6",
     "mongoose": "^5.9.3",
     "nodemon": "^2.0.2",
+    "passport": "^0.4.1",
+    "passport-local-mongoose": "^6.0.1",
     "react-compound-timer": "^1.1.15",
     "react-responsive-modal": "^4.0.1"
   }

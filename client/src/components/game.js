@@ -141,19 +141,23 @@ const Game = () => {
     onOpenModal();
   }
 
-  const updateCredentials = event => {
-    if (event.target.name === "username") {
+  const inputUserName = event => {
       setUserName(event.target.value);
-    }
-    else {
-      setUserPassword(event.target.value);
-    }
   }
 
-  const doLogin = credentials => {
+  const inputPassword = event => {
+    setUserPassword(event.target.value);
+  }
+
+  const doLogin = () => {
+    let credentials = {
+      username: userName,
+      password: userPassword
+    }
     axios.post("/api/login", credentials).then((response) => {
-      console.log(`status of login is.. ${response}`);
+      console.log(`status of login is.. ${response.data}`);
       onCloseModal();
+      setLoggingIn(false);
     });
   }
 
@@ -259,8 +263,8 @@ const Game = () => {
           {loggingIn === true ?
             <div>
               <h1>Login here:</h1>
-              <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={updateCredentials}></input>
-              <input placeholder="Password" name="password" value={userPassword} maxLength="16" onChange={updateCredentials}></input>
+              <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={inputUserName}></input>
+              <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={inputPassword}></input>
               <button onClick={doLogin}>Submit</button>
             </div>
           :

@@ -20,30 +20,22 @@ const Game = () => {
 
   // FOR FIRING USEEFFECTS THAT SHOULD NOT FIRE ON THE FIRST RENDER
   const firstMount = useRef(true);
-
   const [prevQuote, setprevQuote] = useState("");
-
   const [quotes, setQuotes] = useState([]);
-
   const [selection, setSelection] = useState([]);
-
   const [replay, setReplay] = useState(false)
-
   const [userText, setUserText] = useState("");
-
-  const [userName, setUserName] = useState("");
-
+  const [pubUserName, setPublicUserName] = useState("");
   const [modal, setModal] = useState(false);
-
   const [scores, setScores] = useState([]);
-
   const [checker, setChecker] = useState([]);
-
   const [firstRender, setFirstRender] = useState(true);
-
   const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null };
-
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const updateUserText = event => {
     if (gameState.startTime === null) {
@@ -63,7 +55,7 @@ const Game = () => {
   }
 
   const updateUserName = event => {
-    setUserName(event.target.value);
+    setPublicUserName(event.target.value);
   }
 
   const setup = () => {
@@ -102,13 +94,13 @@ const Game = () => {
     // to move onto the next stage can be put in a useEffect
     setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
     setUserText("");
-    setUserName("");
+    setPublicUserName("");
     setChecker("");
     setReplay(true);
     localStorage.clear();
   }
 
-  const getScores = (currentQuote) => {
+  const getScores = currentQuote => {
     axios.get(`/api/${currentQuote}`).then((response) => {
       console.log(response)
       setScores(response.data);
@@ -133,7 +125,7 @@ const Game = () => {
   const addScore = () => {
     let obj = {
       quote: selection[0],
-      name: userName,
+      name: pubUserName,
       score: gameState.totalTime,
     }
     axios.post("/api/quote", obj).then((response) => {
@@ -145,6 +137,32 @@ const Game = () => {
     });
   }
 
+  const promptLogin = () => {
+    setLoggingIn(true);
+    onOpenModal();
+  }
+
+  const loginGate = (event) => {
+    if (event.target.name === "username") {
+      setUserName(event.target.value);
+    }
+    else {
+      setUserPassword(event.target.value);
+    }
+  }
+
+  const doLogin = () => {
+    let credentials = {
+      username: userName,
+      password: userPassword
+    }
+    axios.post("/api/login", credentials).then((response) => {
+      console.log(`status of login is.. ${response.data}`);
+      onCloseModal();
+      setLoggingIn(false);
+    });
+  }
+
   const onOpenModal = () => {
     setModal(true);
   }
@@ -153,7 +171,7 @@ const Game = () => {
     setModal(false);
   }
 
-  const antiCheat = (a) => {
+  const antiCheat = a => {
     a.onpaste = e => {
       e.preventDefault();
       return false;
@@ -198,81 +216,90 @@ const Game = () => {
 
   return (
     <div>
-    <Nav></Nav>
-    <div className="container fluid">
-      {gameState.readyMessage}
-      <br></br><br></br>
-      <div className="card">
-        <div className="card-body">
-          <blockquote className="blockquote mb-0">
-          <p>Your quote to type is:<br></br><span id="quote">{selection[0]}<br></br></span></p>
-            {/* <footer className=""><cite title="Source Title">{selection[1]}</cite></footer> */}
-          </blockquote>
+      <Nav promptLogin={promptLogin}></Nav>
+      <div className="container fluid">
+        {gameState.readyMessage}
+        <br></br><br></br>
+        <div className="card">
+          <div className="card-body">
+            <blockquote className="blockquote mb-0">
+              <p>Your quote to type is:<br></br><span id="quote">{selection[0]}<br></br></span></p>
+              {/* <footer className=""><cite title="Source Title">{selection[1]}</cite></footer> */}
+            </blockquote>
+          </div>
         </div>
-      </div>
-      
-      <br></br>
 
-      {gameState.prepared === true && gameState.victory === false ?
-        <div>
-          <input id="textbox"
-            value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length} maxLength={selection[0].length}>
-          </input>
-          <br></br>
-          {gameState.timer === true ?
-            <div>
-              <Timer
-                startImmediately={false}>
-                {({ start, resume, pause, stop, reset, timerState }) => (
-                  <React.Fragment>
-                    <Timer.Seconds /> seconds have elapsed!
-                {start()}
-                  </React.Fragment>
-                )}
-              </Timer>
-              {/*  if you have two characters, the array will render two each's, and so forth */}
-              <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
-            </div>
-            : ""}
-        </div>
-        : null}
-      <br></br>
-      
-      {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
-      <br></br>
-
-      {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
-        <button onClick={() => reset()}>Play again?</button></div> : ""}
-      <Modal open={modal} onClose={onCloseModal} center>
-        Game finished in {gameState.totalTime} milliseconds.
         <br></br>
-        Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} maxLength="16" onChange={updateUserName}></input>
-        <button onClick={addScore}>Submit</button>
-      </Modal>
 
-      <h2 className="centerAlign">High scores on this quote:</h2>
-      {
-        (firstRender === false && scores.name === "No Scores yet on this quote!") ?
-          <h2 className="centerAlign">No Scores yet on this quote</h2> :
-          ((firstRender === false) ?
-            <table >
-              <tbody>
-              <tr>
-                <th>Name</th>
-                <th>Score (milliseconds)</th>
-              </tr>
-              {scores.map((each, index) =>
-                each.name === localStorage.currentName && each.score === localStorage.currentScore ?
-                  <tr key={index}><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
-                  :
-                  <tr key={index}><td>{each.name}</td><td>{each.score}</td></tr>
-              )}
-              </tbody>
-            </table>
-            :
-            "")
-      }
-      {/* 
+        {gameState.prepared === true && gameState.victory === false ?
+          <div>
+            <input id="textbox"
+              value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length} maxLength={selection[0].length}>
+            </input>
+            <br></br>
+            {gameState.timer === true ?
+              <div>
+                <Timer
+                  startImmediately={false}>
+                  {({ start, resume, pause, stop, reset, timerState }) => (
+                    <React.Fragment>
+                      <Timer.Seconds /> seconds have elapsed!
+                {start()}
+                    </React.Fragment>
+                  )}
+                </Timer>
+                {/*  if you have two characters, the array will render two each's, and so forth */}
+                <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
+              </div>
+              : ""}
+          </div>
+          : null}
+        <br></br>
+
+        {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
+        <br></br>
+
+        {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
+          <button onClick={() => reset()}>Play again?</button></div> : ""}
+        <Modal open={modal} onClose={onCloseModal} center>
+          {loggingIn === true ?
+            <div>
+              <h1>Login here:</h1>
+              <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginGate}></input>
+              <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginGate}></input>
+              <button onClick={doLogin}>Submit</button>
+            </div>
+          :
+            <div>
+            Game finished in gameState.totalTime milliseconds. <br></br>
+            Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
+            <button onClick={addScore}>Submit</button>
+          </div>}
+        </Modal>
+
+        <h2 className="centerAlign">High scores on this quote:</h2>
+        {
+          (firstRender === false && scores.name === "No Scores yet on this quote!") ?
+            <h2 className="centerAlign">No Scores yet on this quote</h2> :
+            ((firstRender === false) ?
+              <table >
+                <tbody>
+                  <tr>
+                    <th>Name</th>
+                    <th>Score (milliseconds)</th>
+                  </tr>
+                  {scores.map((each, index) =>
+                    each.name === localStorage.currentName && each.score === localStorage.currentScore ?
+                      <tr key={index}><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
+                      :
+                      <tr key={index}><td>{each.name}</td><td>{each.score}</td></tr>
+                  )}
+                </tbody>
+              </table>
+              :
+              "")
+        }
+        {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW
 
@@ -282,7 +309,7 @@ const Game = () => {
       called in props or inside the function itself
       
       */}
-    </div>
+      </div>
     </div>
   )
 }

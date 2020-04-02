@@ -150,7 +150,7 @@ router.post("/api/quote", (req, res) => {
   }).catch(err => res.json(err))
 });
 
-router.post("/login", (req, res, next) => {
+router.post("/api/login", (req, res, next) => {
   /* PASSPORT LOCAL AUTHENTICATION */
   console.log(`trying to login`)
   passport.authenticate("local", (err, user, info) => {
@@ -161,7 +161,8 @@ router.post("/login", (req, res, next) => {
     // authentication failure:
     if (!user) {
       console.log("failure")
-      return res.redirect('/login?info=' + info);
+      return res.json("Failure")
+      // return res.redirect('/login?info=' + info);
     }
     // authentication success:
     req.logIn(user, function (err) {
@@ -169,7 +170,8 @@ router.post("/login", (req, res, next) => {
         return next(err);
       }
       console.log("success!")
-      return res.redirect('/');
+      return res.json("Success!")
+      // return res.redirect('/');
     });
 
   })(req, res, next);

@@ -20,32 +20,21 @@ const Game = () => {
 
   // FOR FIRING USEEFFECTS THAT SHOULD NOT FIRE ON THE FIRST RENDER
   const firstMount = useRef(true);
-
   const [prevQuote, setprevQuote] = useState("");
-
   const [quotes, setQuotes] = useState([]);
-
   const [selection, setSelection] = useState([]);
-
   const [replay, setReplay] = useState(false)
-
   const [userText, setUserText] = useState("");
-
-  const [userName, setUserName] = useState("");
-
+  const [pubUserName, setPublicUserName] = useState("");
   const [modal, setModal] = useState(false);
-
   const [scores, setScores] = useState([]);
-
   const [checker, setChecker] = useState([]);
-
   const [firstRender, setFirstRender] = useState(true);
-
   const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null };
-
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
-
   const [loggingIn, setLoggingIn] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userPassword, setUserPassword] = useState("");
 
   const updateUserText = event => {
     if (gameState.startTime === null) {
@@ -65,7 +54,7 @@ const Game = () => {
   }
 
   const updateUserName = event => {
-    setUserName(event.target.value);
+    setPublicUserName(event.target.value);
   }
 
   const setup = () => {
@@ -104,13 +93,13 @@ const Game = () => {
     // to move onto the next stage can be put in a useEffect
     setGameState({ ...gameState, victory: false, startTime: null, endTime: null, prepared: false, readyMessage: "" });
     setUserText("");
-    setUserName("");
+    setPublicUserName("");
     setChecker("");
     setReplay(true);
     localStorage.clear();
   }
 
-  const getScores = (currentQuote) => {
+  const getScores = currentQuote => {
     axios.get(`/api/${currentQuote}`).then((response) => {
       console.log(response)
       setScores(response.data);
@@ -135,7 +124,7 @@ const Game = () => {
   const addScore = () => {
     let obj = {
       quote: selection[0],
-      name: userName,
+      name: pubUserName,
       score: gameState.totalTime,
     }
     axios.post("/api/quote", obj).then((response) => {
@@ -152,7 +141,16 @@ const Game = () => {
     onOpenModal();
   }
 
-  const doLogin = (credentials) => {
+  const updateCredentials = event => {
+    if (event.target.name === "username") {
+      setUserName(event.target.value);
+    }
+    else {
+      setUserPassword(event.target.value);
+    }
+  }
+
+  const doLogin = credentials => {
     axios.post("/api/login", credentials).then((response) => {
       console.log(`status of login is.. ${response}`);
       onCloseModal();
@@ -167,7 +165,7 @@ const Game = () => {
     setModal(false);
   }
 
-  const antiCheat = (a) => {
+  const antiCheat = a => {
     a.onpaste = e => {
       e.preventDefault();
       return false;
@@ -261,14 +259,14 @@ const Game = () => {
           {loggingIn === true ?
             <div>
               <h1>Login here:</h1>
-              <input placeholder="Username" value={userName} maxLength="16" onChange={updateUserName}></input>
-              <input placeholder="Password" value={userName} maxLength="16" onChange={updateUserName}></input>
+              <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={updateCredentials}></input>
+              <input placeholder="Password" name="password" value={userPassword} maxLength="16" onChange={updateCredentials}></input>
               <button onClick={doLogin}>Submit</button>
             </div>
           :
             <div>
             Game finished in gameState.totalTime milliseconds. <br></br>
-            Please enter your name: <input id="nameField" placeholder="Name Here" value={userName} maxLength="16" onChange={updateUserName}></input>
+            Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
             <button onClick={addScore}>Submit</button>
           </div>}
         </Modal>

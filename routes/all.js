@@ -150,7 +150,7 @@ router.post("/api/quote", (req, res) => {
   }).catch(err => res.json(err))
 });
 
-router.post("/login", (req, res, next) => {
+router.post("/api/login", (req, res, next) => {
   /* PASSPORT LOCAL AUTHENTICATION */
   console.log(`trying to login`)
   passport.authenticate("local", (err, user, info) => {

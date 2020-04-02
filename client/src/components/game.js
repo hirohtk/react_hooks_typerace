@@ -35,6 +35,7 @@ const Game = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [userName, setUserName] = useState("");
   const [userPassword, setUserPassword] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const updateUserText = event => {
     if (gameState.startTime === null) {
@@ -141,12 +142,13 @@ const Game = () => {
     onOpenModal();
   }
 
-  const inputUserName = event => {
+  const loginGate = (event) => {
+    if (event.target.name === "username") {
       setUserName(event.target.value);
-  }
-
-  const inputPassword = event => {
-    setUserPassword(event.target.value);
+    }
+    else {
+      setUserPassword(event.target.value);
+    }
   }
 
   const doLogin = () => {
@@ -263,8 +265,8 @@ const Game = () => {
           {loggingIn === true ?
             <div>
               <h1>Login here:</h1>
-              <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={inputUserName}></input>
-              <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={inputPassword}></input>
+              <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginGate}></input>
+              <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginGate}></input>
               <button onClick={doLogin}>Submit</button>
             </div>
           :

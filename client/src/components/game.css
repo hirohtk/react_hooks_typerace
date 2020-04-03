@@ -39,3 +39,8 @@ background-color: pink;
     
     font-weight: bolder;
 }
+
+#userSection {
+    margin-top: 2rem;
+    border: 1px solid black;
+}

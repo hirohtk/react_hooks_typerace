@@ -142,6 +142,10 @@ const Game = () => {
     onOpenModal();
   }
 
+  const logOut = () => {
+    setLoggedIn(false);
+  }
+
   const loginGate = (event) => {
     if (event.target.name === "username") {
       setUserName(event.target.value);
@@ -160,6 +164,7 @@ const Game = () => {
       console.log(`status of login is.. ${response.data}`);
       onCloseModal();
       setLoggingIn(false);
+      setLoggedIn(true);
     });
   }
 
@@ -216,7 +221,7 @@ const Game = () => {
 
   return (
     <div>
-      <Nav promptLogin={promptLogin}></Nav>
+      <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut}></Nav>
       <div className="container fluid">
         {gameState.readyMessage}
         <br></br><br></br>

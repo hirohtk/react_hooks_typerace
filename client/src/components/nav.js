@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import "./nav.css"
 
 const Nav = (props) => {
 
@@ -6,6 +7,7 @@ const Nav = (props) => {
         <div>
             <nav className="navbar navbar-light bg-light">
                 <a className="navbar-brand">Type Race</a>
+                {props.currentUser != null || undefined ? `Welcome, ${props.currentUser}!` : ""}
                 <ul class="nav justify-content-end">
                     <li class="nav-item">
                         <button className="btn btn-success my-2 my-sm-0" onClick={props.promptRegister}>Register</button>

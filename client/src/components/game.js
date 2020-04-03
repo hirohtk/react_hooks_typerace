@@ -35,6 +35,7 @@ const Game = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [userName, setUserName] = useState("");
+  const [currentUser, setCurrentUser] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -179,6 +180,7 @@ const Game = () => {
           setLoggingIn(false);
           setLoggedIn(true);
           setUserName("");
+          setCurrentUser(response.data);
           setUserPassword("");
           // GRAB USER DETAILS -- response.data is the username
         }
@@ -254,7 +256,7 @@ const Game = () => {
 
   return (
     <div>
-      <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister}></Nav>
+      <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister} currentUser={currentUser}></Nav>
       <div className="container fluid">
         {gameState.readyMessage}
         <br></br><br></br>

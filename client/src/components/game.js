@@ -317,7 +317,7 @@ const Game = () => {
           <button onClick={doLogOrReg}>Submit</button>
         </div>
             : <div>
-            Game finished in gameState.totalTime milliseconds. <br></br>
+            Game finished in {gameState.totalTime} milliseconds. <br></br>
             Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
             <button onClick={addScore}>Submit</button>
             </div>}
@@ -345,6 +345,9 @@ const Game = () => {
               :
               "")
         }
+        <div id="userSection">
+
+        </div>
         {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW

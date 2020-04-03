@@ -33,6 +33,7 @@ const Game = () => {
   const INITIAL_GAME_STATE = { victory: false, startTime: null, endTime: null };
   const [gameState, setGameState] = useState(INITIAL_GAME_STATE);
   const [loggingIn, setLoggingIn] = useState(false);
+  const [registering, setRegistering] = useState(false);
   const [userName, setUserName] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
@@ -142,30 +143,62 @@ const Game = () => {
     onOpenModal();
   }
 
+  const promptRegister = () => {
+    setRegistering(true);
+    onOpenModal();
+  }
+
   const logOut = () => {
     setLoggedIn(false);
   }
 
-  const loginGate = (event) => {
-    if (event.target.name === "username") {
-      setUserName(event.target.value);
-    }
-    else {
-      setUserPassword(event.target.value);
-    }
+  const loginRegisterGate = (event) => {
+      if (event.target.name === "username") {
+        setUserName(event.target.value);
+      }
+      else {
+        setUserPassword(event.target.value);
+      }
   }
 
-  const doLogin = () => {
+  const doLogOrReg = () => {
     let credentials = {
       username: userName,
       password: userPassword
     }
-    axios.post("/api/login", credentials).then((response) => {
-      console.log(`status of login is.. ${response.data}`);
-      onCloseModal();
-      setLoggingIn(false);
-      setLoggedIn(true);
-    });
+    //login
+    if (loggingIn === true) {
+      axios.post("/api/login", credentials).then((response, err) => {
+        console.log(response.data);
+        if (err) {
+        }
+        else if (response.data === "Failure") {
+        }
+        else {
+          onCloseModal();
+          setLoggingIn(false);
+          setLoggedIn(true);
+          setUserName("");
+          setUserPassword("");
+          // GRAB USER DETAILS -- response.data is the username
+        }
+      });
+    }
+    //register
+    else {
+      axios.post("/api/register", credentials).then((response, err) => {
+        console.log(response.data);
+        if (err) {
+        }
+        else {
+          onCloseModal();
+          setRegistering(false);
+          setUserName("");
+          setUserPassword("");
+          // GRAB USER DETAILS -- response.data is the username
+        }
+      });
+    }
   }
 
   const onOpenModal = () => {
@@ -221,7 +254,7 @@ const Game = () => {
 
   return (
     <div>
-      <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut}></Nav>
+      <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister}></Nav>
       <div className="container fluid">
         {gameState.readyMessage}
         <br></br><br></br>
@@ -269,17 +302,23 @@ const Game = () => {
         <Modal open={modal} onClose={onCloseModal} center>
           {loggingIn === true ?
             <div>
-              <h1>Login here:</h1>
-              <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginGate}></input>
-              <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginGate}></input>
-              <button onClick={doLogin}>Submit</button>
+              <h1>Login</h1>
+              <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
+              <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
+              <button onClick={doLogOrReg}>Submit</button>
             </div>
-          :
-            <div>
+          : registering === true ? 
+          <div>
+          <h1>User Registration</h1>
+          <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
+          <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
+          <button onClick={doLogOrReg}>Submit</button>
+        </div>
+            : <div>
             Game finished in gameState.totalTime milliseconds. <br></br>
             Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
             <button onClick={addScore}>Submit</button>
-          </div>}
+            </div>}
         </Modal>
 
         <h2 className="centerAlign">High scores on this quote:</h2>

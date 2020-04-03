@@ -170,15 +170,15 @@ router.post("/api/login", (req, res, next) => {
         return next(err);
       }
       console.log("success!")
-      return res.json("Success!")
+      return res.json(user.username)
       // return res.redirect('/');
     });
 
   })(req, res, next);
 });
 
-router.get("/register", function (req, res) {
-  db.Users.register({ username: 'test'}, '12345', (err) => {
+router.post("/api/register", function (req, res) {
+  db.Users.register({ username: req.body.username}, req.body.password, (err) => {
     if (err) {
       console.log("error", err);
     }

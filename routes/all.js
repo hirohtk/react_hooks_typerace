@@ -116,7 +116,7 @@ router.get("/api/:quote", (req, res) => {
 
 router.post("/api/quote", (req, res) => {
 
-  console.log(`req.body is ${req.body}`)
+  console.log(`req.body is ${JSON.stringify(req.body)}`)
 
   let poster = (quoteId) => {
     let obj = {
@@ -125,20 +125,23 @@ router.post("/api/quote", (req, res) => {
       score: req.body.score,
     }
     // creating a score exactly as schema is setup.  association is handled by passing in the quoteId of the quote field
+    console.log("trying to post score")
     db.Scores.create(obj).then((response) => {
       // when working with associations, any value for association must be entered as the associated document's ID, nothing else. 
       // mongo seems to take care of the rest (in terms of bringing up the details of the document itself) 
       let scoreID = response._id
       console.log(scoreID);
+      console.log("score posting successful")
       db.Quotes.findByIdAndUpdate(quoteId, { $push: { scores: scoreID } }).then((response) => {
         if (req.body.loggedIn === true) {
           // both scoreID and quoteiD are just references
-          db.Users.findOneAndUpdate(obj.name, { $push: { history: [scoreID, quoteId] } }).then(
-            response => res.json(response)
+          console.log("LOGGED IN")
+          db.Users.findOneAndUpdate(obj.name, { $push: { history: [scoreID, quoteId] } }).then(response => res.json(response)
           )
         }
         else {
-          response => res.json(response);
+          console.log("NOT LOGGED IN")
+          res.json(response);
         }
       }
       )
@@ -149,14 +152,12 @@ router.post("/api/quote", (req, res) => {
     // if there already exists this quote in the db, post your score
     if (response != null) {
       console.log("FOUND QUOTE")
-      console.log(`quote id is ${response._id}.  I'm looking for object ID of this quote`)
       poster(response._id);
     }
     // but if no quote is found, then create the quote, then post your score 
     else {
       console.log("COULD NOT FIND QUOTE")
       db.Quotes.create({ quote: req.body.quote }).then((response) => {
-        console.log(`quote id is ${response._id}.  I'm looking for object ID of this quote`)
         poster(response._id);
       })
     }

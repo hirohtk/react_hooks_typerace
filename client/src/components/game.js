@@ -52,7 +52,13 @@ const Game = () => {
       let totalTime = finishTime - gameState.startTime;
       setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime, timer: false })
       setUserText("");
-      onOpenModal();
+      if (loggedIn === true) {
+        console.log('youre logged in, adding score automatically')
+        addScore();
+      }
+      else {
+        onOpenModal();
+      }
     }
   }
 
@@ -125,22 +131,21 @@ const Game = () => {
   }
 
   const addScore = () => {
-    let obj = {}
+    let obj = {
+      quote: selection[0],
+      score: gameState.totalTime,
+    }
+    console.log("adding score")
     if (loggedIn === true) {
-      obj = {
-        quote: selection[0],
-        name: currentUser,
-        score: gameState.totalTime,
-        loggedIn: true,
-      }
+      obj.name = currentUser;
+      obj.loggedIn = true;
+      console.log("LOGGED IN")
     }
     else {
-      obj = {
-        quote: selection[0],
-        name: pubUserName,
-        score: gameState.totalTime,
-      }
+      obj.name = pubUserName;
+      console.log("NOT LOGGED IN")
     }
+    console.log(obj);
     axios.post("/api/quote", obj).then((response) => {
       console.log(response);
       onCloseModal();
@@ -328,7 +333,7 @@ const Game = () => {
           <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
           <button onClick={doLogOrReg}>Submit</button>
         </div>
-            : loggedIn === true ? "Score saved to your account!" : 
+            : 
             <div>
             Game finished in {gameState.totalTime} milliseconds. <br></br>
             Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>

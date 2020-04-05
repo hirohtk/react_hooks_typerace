@@ -59,7 +59,7 @@ router.get("/scrape", function (req, res) {
         // regex:  replace all numbers with nothing (DOESNT WORK IF THERE ARE NUMBERS IN THE MIDDLE THOUGH)
         // let numRemoved = arr[j].replace(/[0-9]/g, '').slice(1).trim()
         //also need to replace different apostrophe
-        let numRemoved = arr[j].slice(3).trim().replace("’", "'")
+        let numRemoved = arr[j].slice(3).trim().replace("’", "'").replace("–", "-")
         newArr.push(numRemoved);
       }
       return newArr;
@@ -135,8 +135,12 @@ router.post("/api/quote", (req, res) => {
       db.Quotes.findByIdAndUpdate(quoteId, { $push: { scores: scoreID } }).then((response) => {
         if (req.body.loggedIn === true) {
           // both scoreID and quoteiD are just references
-          console.log("LOGGED IN")
-          db.Users.findOneAndUpdate(obj.name, { $push: { history: [scoreID, quoteId] } }).then(response => res.json(response)
+          console.log(`LOGGED IN, scoreId and quoteId are ${scoreID}, ${quoteId} and you are ${obj.name}`)
+          db.Users.findOneAndUpdate(obj.name, { $push: { history: [scoreID, quoteId] } }).then(
+            response => {
+              console.log(`posted to user.  response is ${response}`);
+              res.json(response)
+            }
           )
         }
         else {

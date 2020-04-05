@@ -54,9 +54,11 @@ const Game = () => {
       setUserText("");
       if (loggedIn === true) {
         console.log('youre logged in, adding score automatically')
-        addScore();
+        // ASYNC WAS MESSING THIS UP- I'D CALL addScore BEFORE GameState COULD BE UPDATED.  THUS, SCORE WASN'T PRESENT
+        addScore(totalTime);
       }
       else {
+        // THIS WAS FINE BECAUSE IT TOOK LONG ENOUGH TO INPUT NAME FOR GAMESTATE TO HAVE SCORE
         onOpenModal();
       }
     }
@@ -130,10 +132,10 @@ const Game = () => {
     return arr;
   }
 
-  const addScore = () => {
+  const addScore = (localScore) => {
     let obj = {
       quote: selection[0],
-      score: gameState.totalTime,
+      score: localScore,
     }
     console.log("adding score")
     if (loggedIn === true) {
@@ -337,7 +339,7 @@ const Game = () => {
             <div>
             Game finished in {gameState.totalTime} milliseconds. <br></br>
             Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
-            <button onClick={addScore}>Submit</button>
+            <button onClick={() => addScore(gameState.totalTime)}>Submit</button>
             </div>}
         </Modal>
 

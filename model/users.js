@@ -12,7 +12,11 @@ const UserSchema = new Schema({
     },
   password: {
       type: String,
-    }
+    },
+
+  history: [{
+    type: Array,
+  }],
 
 });
 

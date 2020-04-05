@@ -125,10 +125,21 @@ const Game = () => {
   }
 
   const addScore = () => {
-    let obj = {
-      quote: selection[0],
-      name: pubUserName,
-      score: gameState.totalTime,
+    let obj = {}
+    if (loggedIn === true) {
+      obj = {
+        quote: selection[0],
+        name: currentUser,
+        score: gameState.totalTime,
+        loggedIn: true,
+      }
+    }
+    else {
+      obj = {
+        quote: selection[0],
+        name: pubUserName,
+        score: gameState.totalTime,
+      }
     }
     axios.post("/api/quote", obj).then((response) => {
       console.log(response);
@@ -137,6 +148,7 @@ const Game = () => {
       localStorage.setItem("currentScore", obj.score);
       getScores(selection[0]);
     });
+    
   }
 
   const promptLogin = () => {
@@ -316,7 +328,8 @@ const Game = () => {
           <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
           <button onClick={doLogOrReg}>Submit</button>
         </div>
-            : <div>
+            : loggedIn === true ? "Score saved to your account!" : 
+            <div>
             Game finished in {gameState.totalTime} milliseconds. <br></br>
             Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
             <button onClick={addScore}>Submit</button>

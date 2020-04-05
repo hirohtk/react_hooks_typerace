@@ -128,8 +128,20 @@ router.post("/api/quote", (req, res) => {
     db.Scores.create(obj).then((response) => {
       // when working with associations, any value for association must be entered as the associated document's ID, nothing else. 
       // mongo seems to take care of the rest (in terms of bringing up the details of the document itself) 
-      console.log(response._id);
-      db.Quotes.findByIdAndUpdate(quoteId, { $push: { scores: response._id } }).then(response => res.json(response))
+      let scoreID = response._id
+      console.log(scoreID);
+      db.Quotes.findByIdAndUpdate(quoteId, { $push: { scores: scoreID } }).then((response) => {
+        if (req.body.loggedIn === true) {
+          // both scoreID and quoteiD are just references
+          db.Users.findOneAndUpdate(obj.name, { $push: { history: [scoreID, quoteId] } }).then(
+            response => res.json(response)
+          )
+        }
+        else {
+          response => res.json(response);
+        }
+      }
+      )
     })
   }
 
@@ -179,7 +191,7 @@ router.post("/api/login", (req, res, next) => {
 });
 
 router.post("/api/register", function (req, res) {
-  db.Users.register({ username: req.body.username}, req.body.password, (err) => {
+  db.Users.register({ username: req.body.username }, req.body.password, (err) => {
     if (err) {
       console.log("error", err);
     }

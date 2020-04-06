@@ -176,6 +176,7 @@ const Game = () => {
 
   const logOut = () => {
     setLoggedIn(false);
+    setCurrentUser([]);
   }
 
   const loginRegisterGate = (event) => {

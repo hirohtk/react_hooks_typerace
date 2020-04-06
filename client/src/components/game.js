@@ -38,6 +38,7 @@ const Game = () => {
   const [currentUser, setCurrentUser] = useState([]);
   const [userPassword, setUserPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
+  const [stats, setStats] = useState([]);
 
   const updateUserText = event => {
     if (gameState.startTime === null) {
@@ -114,6 +115,10 @@ const Game = () => {
     axios.get(`/api/${currentQuote}`).then((response) => {
       console.log(`response from quering current quote scores is ${JSON.stringify(response.data)}`)
       setScores(response.data);
+      console.log(`current user id is ${currentUser[1]}`)
+      axios.get(`/api/user/${currentUser[1]}`).then((response) => {
+        console.log(response);
+      })
     })
   }
 

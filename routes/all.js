@@ -49,13 +49,21 @@ router.get("/scrape", function (req, res) {
   });
 });
 
+router.get("/api/user/:id", (req, res) => {
+  let id = req.params.id;
+  console.log(`trying to find user ${JSON.stringify(req.params)}`)
+  db.Users.findById(req.params.id).populate("history").then(response => {
+    console.log(`well response is ${response}`);
+    res.json(response);
+  });
+})
+
 router.get("/api/:quote", (req, res) => {
-  console.log("get route firing")
   db.Quotes.findOne({ quote: req.params.quote }).populate("scores")
     .then(response => {
       if (response != undefined) {
 
-        console.log(response)
+        console.log(`response from quote route after populating scores is ${response}`)
         // 1.  get all scores into objects that contain the name and score
         let unsortedObjects = []
         for (let i = 0; i < response.scores.length; i++) {

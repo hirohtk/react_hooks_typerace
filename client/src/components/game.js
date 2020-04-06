@@ -35,7 +35,7 @@ const Game = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [userName, setUserName] = useState("");
-  const [currentUser, setCurrentUser] = useState("");
+  const [currentUser, setCurrentUser] = useState([]);
   const [userPassword, setUserPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -139,7 +139,7 @@ const Game = () => {
     }
     console.log("adding score")
     if (loggedIn === true) {
-      obj.name = currentUser;
+      obj.id = currentUser[1];
       obj.loggedIn = true;
       console.log("LOGGED IN")
     }
@@ -199,14 +199,14 @@ const Game = () => {
           setLoggingIn(false);
           setLoggedIn(true);
           setUserName("");
-          setCurrentUser(response.data);
+          setCurrentUser([response.data.username, response.data.id]);
           setUserPassword("");
           // GRAB USER DETAILS -- response.data is the username
         }
       });
     }
     //register
-    else {
+    else if (registering === true) {
       axios.post("/api/register", credentials).then((response, err) => {
         console.log(response.data);
         if (err) {
@@ -275,7 +275,7 @@ const Game = () => {
 
   return (
     <div>
-      <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister} currentUser={currentUser}></Nav>
+      <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister} currentUser={currentUser[0]}></Nav>
       <div className="container fluid">
         {gameState.readyMessage}
         <br></br><br></br>

@@ -16,26 +16,6 @@ passport.deserializeUser(db.Users.deserializeUser());
 // /The connect-ensure-login package is middleware that ensures a user is logged in.
 const connectEnsureLogin = require("connect-ensure-login");
 
-// router.get("/scrape", function (req, res) {
-
-//   axios.get("http://www.famousquotesandauthors.com/topics/sea_quotes.html").then((response) => {
-
-//     let quoteArray = [];
-
-//     let $ = cheerio.load(response.data);
-
-//     // THIS IS ESSENTAILLY A FOR LOOP, making a new result object for every headline
-//     $("div[style~='font-size:12px;font-family:Arial;']").each(function (i, element) {
-//       let quote = {
-//         quote: $(element).text(),
-//         author: $(element).next().text()
-//       }
-//       quoteArray.push(quote);
-//     });
-//     res.json(quoteArray);
-//   });
-// });
-
 router.get("/scrape", function (req, res) {
   axios.get("https://www.universalclass.com/articles/self-help/keyboarding-practice-sentence-repetition.htm").then((response) => {
 
@@ -125,18 +105,17 @@ router.post("/api/quote", (req, res) => {
       score: req.body.score,
     }
     // creating a score exactly as schema is setup.  association is handled by passing in the quoteId of the quote field
-    console.log("trying to post score")
     db.Scores.create(obj).then((response) => {
       // when working with associations, any value for association must be entered as the associated document's ID, nothing else. 
       // mongo seems to take care of the rest (in terms of bringing up the details of the document itself) 
       let scoreID = response._id
-      console.log(scoreID);
       console.log("score posting successful")
       db.Quotes.findByIdAndUpdate(quoteId, { $push: { scores: scoreID } }).then((response) => {
+        console.log(`quote is ${quoteId}`);
         if (req.body.loggedIn === true) {
           // both scoreID and quoteiD are just references
           console.log(`LOGGED IN, scoreId and quoteId are ${scoreID}, ${quoteId} and you are ${obj.name}`)
-          db.Users.findOneAndUpdate(obj.name, { $push: { history: [scoreID, quoteId] } }).then(
+          db.Users.findByIdAndUpdate(obj.id, { $push: { history: [scoreID, quoteId] } }).then(
             response => {
               console.log(`posted to user.  response is ${response}`);
               res.json(response)
@@ -188,7 +167,7 @@ router.post("/api/login", (req, res, next) => {
         return next(err);
       }
       console.log("success!")
-      return res.json(user.username)
+      return res.json({username: user.username, id: user._id})
       // return res.redirect('/');
     });
 
@@ -200,6 +179,7 @@ router.post("/api/register", function (req, res) {
     if (err) {
       console.log("error", err);
     }
+    console.log(`creating a new user, name is ${req.body.username}, password is ${req.body.password}`)
   });
   res.json("Users created")
 });

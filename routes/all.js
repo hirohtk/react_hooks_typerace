@@ -52,7 +52,7 @@ router.get("/scrape", function (req, res) {
 router.get("/api/user/:id", (req, res) => {
   let id = req.params.id;
   console.log(`trying to find user ${JSON.stringify(req.params)}`)
-  db.Users.findById(req.params.id).populate("history").then(response => {
+  db.Users.findById(req.params.id).populate("quote scores").then(response => {
     console.log(`well response is ${response}`);
     res.json(response);
   });
@@ -124,7 +124,7 @@ router.post("/api/quote", (req, res) => {
           // both scoreID and quoteiD are just references
           obj.id = req.body.id;
           console.log(`LOGGED IN, scoreId and quoteId are ${scoreID}, ${quoteId} and you are ${obj.name}`)
-          db.Users.findByIdAndUpdate(obj.id, { $push: { history: [scoreID, quoteId] } }).then(
+          db.Users.findByIdAndUpdate(obj.id, { $push: { history: {quote: quoteId, score: scoreID} }}).then(
             response => {
               console.log(`posted to user.  response is ${response}`);
               res.json(response)

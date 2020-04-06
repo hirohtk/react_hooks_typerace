@@ -114,6 +114,7 @@ router.post("/api/quote", (req, res) => {
         console.log(`quote is ${quoteId}`);
         if (req.body.loggedIn === true) {
           // both scoreID and quoteiD are just references
+          obj.id = req.body.id;
           console.log(`LOGGED IN, scoreId and quoteId are ${scoreID}, ${quoteId} and you are ${obj.name}`)
           db.Users.findByIdAndUpdate(obj.id, { $push: { history: [scoreID, quoteId] } }).then(
             response => {

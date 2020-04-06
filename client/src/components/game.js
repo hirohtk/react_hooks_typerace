@@ -112,7 +112,7 @@ const Game = () => {
 
   const getScores = currentQuote => {
     axios.get(`/api/${currentQuote}`).then((response) => {
-      console.log(response)
+      console.log(`response from quering current quote scores is ${JSON.stringify(response.data)}`)
       setScores(response.data);
     })
   }
@@ -139,6 +139,7 @@ const Game = () => {
     }
     console.log("adding score")
     if (loggedIn === true) {
+      obj.name = currentUser[0];
       obj.id = currentUser[1];
       obj.loggedIn = true;
       console.log("LOGGED IN")

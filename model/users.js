@@ -25,6 +25,22 @@ const UserSchema = new Schema({
     }
   }],
 
+
+  // history: [
+  //   {
+  //     both: {
+  //       quote: {
+  //         type: Schema.Types.ObjectId,
+  //         ref: "Quotes",
+  //       },
+  //       score: { 
+  //         type: Schema.Types.ObjectId,
+  //         ref: "Scores",
+  //       }
+  //     }
+  //   }
+  // ],
+
 });
 
 // THIS IS WHAT CREATES LOCAL STRATEGY 

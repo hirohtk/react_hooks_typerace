@@ -16,26 +16,6 @@ passport.deserializeUser(db.Users.deserializeUser());
 // /The connect-ensure-login package is middleware that ensures a user is logged in.
 const connectEnsureLogin = require("connect-ensure-login");
 
-// router.get("/scrape", function (req, res) {
-
-//   axios.get("http://www.famousquotesandauthors.com/topics/sea_quotes.html").then((response) => {
-
-//     let quoteArray = [];
-
-//     let $ = cheerio.load(response.data);
-
-//     // THIS IS ESSENTAILLY A FOR LOOP, making a new result object for every headline
-//     $("div[style~='font-size:12px;font-family:Arial;']").each(function (i, element) {
-//       let quote = {
-//         quote: $(element).text(),
-//         author: $(element).next().text()
-//       }
-//       quoteArray.push(quote);
-//     });
-//     res.json(quoteArray);
-//   });
-// });
-
 router.get("/scrape", function (req, res) {
   axios.get("https://www.universalclass.com/articles/self-help/keyboarding-practice-sentence-repetition.htm").then((response) => {
 
@@ -58,7 +38,8 @@ router.get("/scrape", function (req, res) {
       for (let j = 0; j < arr.length; j++) {
         // regex:  replace all numbers with nothing (DOESNT WORK IF THERE ARE NUMBERS IN THE MIDDLE THOUGH)
         // let numRemoved = arr[j].replace(/[0-9]/g, '').slice(1).trim()
-        let numRemoved = arr[j].slice(3).trim()
+        //also need to replace different apostrophe
+        let numRemoved = arr[j].slice(3).trim().replace("’", "'").replace("–", "-")
         newArr.push(numRemoved);
       }
       return newArr;
@@ -68,13 +49,21 @@ router.get("/scrape", function (req, res) {
   });
 });
 
+router.get("/api/user/:id", (req, res) => {
+  let id = req.params.id;
+  console.log(`trying to find user ${JSON.stringify(req.params)}`)
+  db.Users.findById(req.params.id).populate("history").then(response => {
+    console.log(`well response is ${response}`);
+    res.json(response);
+  });
+})
+
 router.get("/api/:quote", (req, res) => {
-  console.log("get route firing")
   db.Quotes.findOne({ quote: req.params.quote }).populate("scores")
     .then(response => {
       if (response != undefined) {
 
-        console.log(response)
+        console.log(`response from quote route after populating scores is ${response}`)
         // 1.  get all scores into objects that contain the name and score
         let unsortedObjects = []
         for (let i = 0; i < response.scores.length; i++) {
@@ -115,7 +104,7 @@ router.get("/api/:quote", (req, res) => {
 
 router.post("/api/quote", (req, res) => {
 
-  console.log(`req.body is ${req.body}`)
+  console.log(`req.body is ${JSON.stringify(req.body)}`)
 
   let poster = (quoteId) => {
     let obj = {
@@ -127,8 +116,27 @@ router.post("/api/quote", (req, res) => {
     db.Scores.create(obj).then((response) => {
       // when working with associations, any value for association must be entered as the associated document's ID, nothing else. 
       // mongo seems to take care of the rest (in terms of bringing up the details of the document itself) 
-      console.log(response._id);
-      db.Quotes.findByIdAndUpdate(quoteId, { $push: { scores: response._id } }).then(response => res.json(response))
+      let scoreID = response._id
+      console.log("score posting successful")
+      db.Quotes.findByIdAndUpdate(quoteId, { $push: { scores: scoreID } }).then((response) => {
+        console.log(`quote is ${quoteId}`);
+        if (req.body.loggedIn === true) {
+          // both scoreID and quoteiD are just references
+          obj.id = req.body.id;
+          console.log(`LOGGED IN, scoreId and quoteId are ${scoreID}, ${quoteId} and you are ${obj.name}`)
+          db.Users.findByIdAndUpdate(obj.id, { $push: { history: [scoreID, quoteId] } }).then(
+            response => {
+              console.log(`posted to user.  response is ${response}`);
+              res.json(response)
+            }
+          )
+        }
+        else {
+          console.log("NOT LOGGED IN")
+          res.json(response);
+        }
+      }
+      )
     })
   }
 
@@ -136,14 +144,12 @@ router.post("/api/quote", (req, res) => {
     // if there already exists this quote in the db, post your score
     if (response != null) {
       console.log("FOUND QUOTE")
-      console.log(`quote id is ${response._id}.  I'm looking for object ID of this quote`)
       poster(response._id);
     }
     // but if no quote is found, then create the quote, then post your score 
     else {
       console.log("COULD NOT FIND QUOTE")
       db.Quotes.create({ quote: req.body.quote }).then((response) => {
-        console.log(`quote id is ${response._id}.  I'm looking for object ID of this quote`)
         poster(response._id);
       })
     }
@@ -170,7 +176,7 @@ router.post("/api/login", (req, res, next) => {
         return next(err);
       }
       console.log("success!")
-      return res.json(user.username)
+      return res.json({username: user.username, id: user._id})
       // return res.redirect('/');
     });
 
@@ -178,10 +184,11 @@ router.post("/api/login", (req, res, next) => {
 });
 
 router.post("/api/register", function (req, res) {
-  db.Users.register({ username: req.body.username}, req.body.password, (err) => {
+  db.Users.register({ username: req.body.username }, req.body.password, (err) => {
     if (err) {
       console.log("error", err);
     }
+    console.log(`creating a new user, name is ${req.body.username}, password is ${req.body.password}`)
   });
   res.json("Users created")
 });

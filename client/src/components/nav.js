@@ -9,7 +9,7 @@ const Nav = (props) => {
                 <a className="navbar-brand">Type Race</a>
                 
                 <ul class="nav justify-content-end">
-                <li class="nav-item"><span>{props.currentUser != "" ? `Welcome, ${props.currentUser}!` : ""}</span></li>
+                <li class="nav-item"><span>{props.currentUser != undefined ? `Welcome, ${props.currentUser}!` : ""}</span></li>
                     <li class="nav-item">
                         <button className="btn btn-success my-2 my-sm-0" onClick={props.promptRegister}>Register</button>
                     </li>

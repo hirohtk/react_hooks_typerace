@@ -35,9 +35,10 @@ const Game = () => {
   const [loggingIn, setLoggingIn] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [userName, setUserName] = useState("");
-  const [currentUser, setCurrentUser] = useState("");
+  const [currentUser, setCurrentUser] = useState([]);
   const [userPassword, setUserPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
+  const [stats, setStats] = useState([]);
 
   const updateUserText = event => {
     if (gameState.startTime === null) {
@@ -52,7 +53,15 @@ const Game = () => {
       let totalTime = finishTime - gameState.startTime;
       setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime, timer: false })
       setUserText("");
-      onOpenModal();
+      if (loggedIn === true) {
+        console.log('youre logged in, adding score automatically')
+        // ASYNC WAS MESSING THIS UP- I'D CALL addScore BEFORE GameState COULD BE UPDATED.  THUS, SCORE WASN'T PRESENT
+        addScore(totalTime);
+      }
+      else {
+        // THIS WAS FINE BECAUSE IT TOOK LONG ENOUGH TO INPUT NAME FOR GAMESTATE TO HAVE SCORE
+        onOpenModal();
+      }
     }
   }
 
@@ -104,8 +113,12 @@ const Game = () => {
 
   const getScores = currentQuote => {
     axios.get(`/api/${currentQuote}`).then((response) => {
-      console.log(response)
+      console.log(`response from quering current quote scores is ${JSON.stringify(response.data)}`)
       setScores(response.data);
+      console.log(`current user id is ${currentUser[1]}`)
+      axios.get(`/api/user/${currentUser[1]}`).then((response) => {
+        console.log(response);
+      })
     })
   }
 
@@ -124,12 +137,23 @@ const Game = () => {
     return arr;
   }
 
-  const addScore = () => {
+  const addScore = (localScore) => {
     let obj = {
       quote: selection[0],
-      name: pubUserName,
-      score: gameState.totalTime,
+      score: localScore,
     }
+    console.log("adding score")
+    if (loggedIn === true) {
+      obj.name = currentUser[0];
+      obj.id = currentUser[1];
+      obj.loggedIn = true;
+      console.log("LOGGED IN")
+    }
+    else {
+      obj.name = pubUserName;
+      console.log("NOT LOGGED IN")
+    }
+    console.log(obj);
     axios.post("/api/quote", obj).then((response) => {
       console.log(response);
       onCloseModal();
@@ -137,6 +161,7 @@ const Game = () => {
       localStorage.setItem("currentScore", obj.score);
       getScores(selection[0]);
     });
+    
   }
 
   const promptLogin = () => {
@@ -151,6 +176,7 @@ const Game = () => {
 
   const logOut = () => {
     setLoggedIn(false);
+    setCurrentUser([]);
   }
 
   const loginRegisterGate = (event) => {
@@ -180,14 +206,14 @@ const Game = () => {
           setLoggingIn(false);
           setLoggedIn(true);
           setUserName("");
-          setCurrentUser(response.data);
+          setCurrentUser([response.data.username, response.data.id]);
           setUserPassword("");
           // GRAB USER DETAILS -- response.data is the username
         }
       });
     }
     //register
-    else {
+    else if (registering === true) {
       axios.post("/api/register", credentials).then((response, err) => {
         console.log(response.data);
         if (err) {
@@ -256,7 +282,7 @@ const Game = () => {
 
   return (
     <div>
-      <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister} currentUser={currentUser}></Nav>
+      <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister} currentUser={currentUser[0]}></Nav>
       <div className="container fluid">
         {gameState.readyMessage}
         <br></br><br></br>
@@ -316,10 +342,11 @@ const Game = () => {
           <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
           <button onClick={doLogOrReg}>Submit</button>
         </div>
-            : <div>
+            : 
+            <div>
             Game finished in {gameState.totalTime} milliseconds. <br></br>
             Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
-            <button onClick={addScore}>Submit</button>
+            <button onClick={() => addScore(gameState.totalTime)}>Submit</button>
             </div>}
         </Modal>
 

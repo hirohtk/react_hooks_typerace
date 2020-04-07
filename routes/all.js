@@ -78,6 +78,13 @@ router.get("/api/user/:id", (req, res) => {
   });
 })
 
+router.get("/api/checkforquote", (req, res) => {
+  db.Quotes.find().then((response) => {
+    console.log(response);
+    res.json(response);
+  })
+})
+
 // router.get("/api/user/:id", (req, res) => {
 //   db.Users.findById(req.params.id).populate("scores").populate("quote").then(response => {
 //     console.log(`well response is ${response}`);
@@ -86,12 +93,10 @@ router.get("/api/user/:id", (req, res) => {
 // })
 
 router.get("/api/quote/:quote", (req, res) => {
-  console.log(`gotta add the question mark to this ${req.params.quote}`)
   db.Quotes.findById(req.params.quote).populate("scores")
     .then(response => {
       console.log(`response that is not popping up is ${response}`)
-      if (response != undefined) {
-
+      if (response.scores.length != 0) {
         console.log(`response from quote route after populating scores is ${response}`)
         // 1.  get all scores into objects that contain the name and score
         let unsortedObjects = []
@@ -146,12 +151,12 @@ router.post("/api/quote", (req, res) => {
       // mongo seems to take care of the rest (in terms of bringing up the details of the document itself) 
       let scoreID = response._id
       console.log("score posting successful")
-      db.Quotes.findByIdAndUpdate(quoteId, { $push: { scores: scoreID } }).then((response) => {
-        console.log(`quote is ${quoteId}`);
+      db.Quotes.findByIdAndUpdate(obj.quote, { $push: { scores: scoreID } }).then((response) => {
+        console.log(`quote is ${obj.quote}`);
         if (req.body.loggedIn === true) {
           // both scoreID and quoteiD are just references
           obj.id = req.body.id;
-          db.Users.findByIdAndUpdate(obj.id, { $push: { history: {quote: quoteId, score: scoreID} }}).then(
+          db.Users.findByIdAndUpdate(obj.id, { $push: { history: {quote: obj.quote, score: scoreID} }}).then(
             response => {
               res.json(response)
             }

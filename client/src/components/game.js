@@ -252,18 +252,20 @@ const Game = () => {
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
-    // if not already done a scrape
-    if (quotes.length === 0) {
-      axios.get("/scrape").then((response) => {
-        setQuotes(response.data)
-        setFirstRender(false);
+    // check if db is empty- if so then scrape
+    axios.get("/api/checkforquote").then(response => {
+      if (response.data.length === 0) {
+        axios.get("/scrape").then((response) => {
+          setQuotes(response.data)
+          setFirstRender(false);
+        }
+        );
       }
-      );
-    }
-    // if we have already done a scrape
-    else {
-      setFirstRender(false);
-    }
+      else {
+        setFirstRender(false);
+        setQuotes(response.data)
+      }
+    })
   }, [])
 
   useEffect(() => {

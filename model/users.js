@@ -6,17 +6,40 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
 
   username: {
-      type: String,
-      required: true,
-      unique: true
-    },
+    type: String,
+    required: true,
+    unique: true
+  },
   password: {
-      type: String,
-    },
+    type: String,
+  },
 
   history: [{
-    type: Array,
+    quote: {
+      type: Schema.Types.ObjectId,
+      ref: "Quotes",
+    },
+    score: {
+      type: Schema.Types.ObjectId,
+      ref: "Scores",
+    }
   }],
+
+
+  // history: [
+  //   {
+  //     both: {
+  //       quote: {
+  //         type: Schema.Types.ObjectId,
+  //         ref: "Quotes",
+  //       },
+  //       score: { 
+  //         type: Schema.Types.ObjectId,
+  //         ref: "Scores",
+  //       }
+  //     }
+  //   }
+  // ],
 
 });
 

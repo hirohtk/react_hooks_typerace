@@ -49,18 +49,33 @@ router.get("/scrape", function (req, res) {
   });
 });
 
+// Model.find().populate({
+//   path: 'friends author'        // either single path or multiple space delimited paths
+// , select: 'name age'            // optional
+// , model: 'ModelName'            // optional
+// , match: { age: { $gte: 18 }}   // optional
+// , options: { sort: { age: -1 }} // optional
+// })
+
 router.get("/api/user/:id", (req, res) => {
-  let id = req.params.id;
-  console.log(`trying to find user ${JSON.stringify(req.params)}`)
-  db.Users.findById(req.params.id).populate("history").then(response => {
-    console.log(`well response is ${response}`);
+  db.Users.findById(req.params.id).populate({path: "scores quote"}).then(response => {
+    // console.log(`well response is ${response}`);
     res.json(response);
   });
 })
 
-router.get("/api/:quote", (req, res) => {
-  db.Quotes.findOne({ quote: req.params.quote }).populate("scores")
+// router.get("/api/user/:id", (req, res) => {
+//   db.Users.findById(req.params.id).populate("scores").populate("quote").then(response => {
+//     console.log(`well response is ${response}`);
+//     res.json(response);
+//   });
+// })
+
+router.get("/api/quote/:quote", (req, res) => {
+  console.log(`gotta add the question mark to this ${req.params.quote}`)
+  db.Quotes.findOne({ quote: req.params.quote}).populate("scores")
     .then(response => {
+      console.log(`response that is not popping up is ${response}`)
       if (response != undefined) {
 
         console.log(`response from quote route after populating scores is ${response}`)
@@ -123,16 +138,36 @@ router.post("/api/quote", (req, res) => {
         if (req.body.loggedIn === true) {
           // both scoreID and quoteiD are just references
           obj.id = req.body.id;
-          console.log(`LOGGED IN, scoreId and quoteId are ${scoreID}, ${quoteId} and you are ${obj.name}`)
-          db.Users.findByIdAndUpdate(obj.id, { $push: { history: [scoreID, quoteId] } }).then(
+          db.Users.findByIdAndUpdate(obj.id, { $push: { history: {quote: quoteId, score: scoreID} }}).then(
             response => {
-              console.log(`posted to user.  response is ${response}`);
               res.json(response)
             }
           )
+
+          // db.Users.findByIdAndUpdate(obj.id, { $push: { history: {quote: quoteId, score: scoreID} }}).then(
+          //   response => {
+          //     console.log(`posted to user.  response is ${response}`);
+          //     res.json(response)
+          //   }
+          // )
+
+          // let testobj = {
+          //   both: {
+          //     quote: quoteId,
+          //     score: scoreID
+          //   }
+          // }
+          // db.Users.findByIdAndUpdate(obj.id, { $push: {history: testobj } }).then(
+          //   response => {
+          //     console.log(`posted to user.  response is ${response}`);
+          //     res.json(response)
+          //   }
+          // )
+
         }
         else {
           console.log("NOT LOGGED IN")
+          console.log(`does this response contain quoteId somewhere? ${response}`);
           res.json(response);
         }
       }

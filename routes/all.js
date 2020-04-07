@@ -44,8 +44,21 @@ router.get("/scrape", function (req, res) {
       }
       return newArr;
     }
-
-    res.json(func1(quoteArray));
+    let func2 = (arr) => {
+      let arrForInsertMany = [];
+      for (let k = 0; k < arr.length; k++) {
+        arrForInsertMany.push({quote: arr[k]})
+      }
+      return arrForInsertMany;
+    }
+    db.Quotes.insertMany(func2(func1(quoteArray)), (error, docs) => {
+      if (error) {
+        console.log(error);
+        return error;
+      }
+      res.json(docs);
+    });
+    // res.json(func1(quoteArray));
   });
 });
 

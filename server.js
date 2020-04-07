@@ -18,7 +18,7 @@ const expressSession = require('express-session')({
 
 
 // Connect to the Mongo DB
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/typequote2";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/typequote4";
 mongoose.connect(
   MONGODB_URI,
   { useNewUrlParser: true, useUnifiedTopology: true },

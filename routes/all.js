@@ -16,6 +16,8 @@ passport.deserializeUser(db.Users.deserializeUser());
 // /The connect-ensure-login package is middleware that ensures a user is logged in.
 const connectEnsureLogin = require("connect-ensure-login");
 
+// As of 4/6/2020 this route is used solely for scraping articles and getting them into the db (basically an exercise
+// for scraping, as it would have been easier to just manually seed.  However this can extend usefulness to doing daily scrapes from CNN)
 router.get("/scrape", function (req, res) {
   axios.get("https://www.universalclass.com/articles/self-help/keyboarding-practice-sentence-repetition.htm").then((response) => {
 
@@ -44,8 +46,20 @@ router.get("/scrape", function (req, res) {
       }
       return newArr;
     }
-
-    res.json(func1(quoteArray));
+    let func2 = (arr) => {
+      let arrForInsertMany = [];
+      for (let k = 0; k < arr.length; k++) {
+        arrForInsertMany.push({quote: arr[k]})
+      }
+      return arrForInsertMany;
+    }
+    db.Quotes.insertMany(func2(func1(quoteArray)), (error, docs) => {
+      if (error) {
+        console.log(error);
+        return error;
+      }
+      res.json(docs);
+    });
   });
 });
 
@@ -59,9 +73,16 @@ router.get("/scrape", function (req, res) {
 
 router.get("/api/user/:id", (req, res) => {
   db.Users.findById(req.params.id).populate({path: "scores quote"}).then(response => {
-    // console.log(`well response is ${response}`);
+    console.log(`well response is ${response}`);
     res.json(response);
   });
+})
+
+router.get("/api/checkforquote", (req, res) => {
+  db.Quotes.find().then((response) => {
+    console.log(response);
+    res.json(response);
+  })
 })
 
 // router.get("/api/user/:id", (req, res) => {
@@ -72,12 +93,10 @@ router.get("/api/user/:id", (req, res) => {
 // })
 
 router.get("/api/quote/:quote", (req, res) => {
-  console.log(`gotta add the question mark to this ${req.params.quote}`)
-  db.Quotes.findOne({ quote: req.params.quote}).populate("scores")
+  db.Quotes.findById(req.params.quote).populate("scores")
     .then(response => {
       console.log(`response that is not popping up is ${response}`)
-      if (response != undefined) {
-
+      if (response.scores.length != 0) {
         console.log(`response from quote route after populating scores is ${response}`)
         // 1.  get all scores into objects that contain the name and score
         let unsortedObjects = []
@@ -121,9 +140,8 @@ router.post("/api/quote", (req, res) => {
 
   console.log(`req.body is ${JSON.stringify(req.body)}`)
 
-  let poster = (quoteId) => {
     let obj = {
-      quote: quoteId,
+      quote: req.body.quote,
       name: req.body.name,
       score: req.body.score,
     }
@@ -133,13 +151,13 @@ router.post("/api/quote", (req, res) => {
       // mongo seems to take care of the rest (in terms of bringing up the details of the document itself) 
       let scoreID = response._id
       console.log("score posting successful")
-      db.Quotes.findByIdAndUpdate(quoteId, { $push: { scores: scoreID } }).then((response) => {
-        console.log(`quote is ${quoteId}`);
+      db.Quotes.findByIdAndUpdate(obj.quote, { $push: { scores: scoreID } }).then((response) => {
         if (req.body.loggedIn === true) {
           // both scoreID and quoteiD are just references
           obj.id = req.body.id;
-          db.Users.findByIdAndUpdate(obj.id, { $push: { history: {quote: quoteId, score: scoreID} }}).then(
+          db.Users.findByIdAndUpdate(obj.id, { $push: { history: {quote: obj.quote, score: scoreID} }}).then(
             response => {
+              console.log(`going back to the history issue, here is response ${response}`)
               res.json(response)
             }
           )
@@ -173,22 +191,6 @@ router.post("/api/quote", (req, res) => {
       }
       )
     })
-  }
-
-  db.Quotes.findOne({ quote: req.body.quote }).then(response => {
-    // if there already exists this quote in the db, post your score
-    if (response != null) {
-      console.log("FOUND QUOTE")
-      poster(response._id);
-    }
-    // but if no quote is found, then create the quote, then post your score 
-    else {
-      console.log("COULD NOT FIND QUOTE")
-      db.Quotes.create({ quote: req.body.quote }).then((response) => {
-        poster(response._id);
-      })
-    }
-  }).catch(err => res.json(err))
 });
 
 router.post("/api/login", (req, res, next) => {

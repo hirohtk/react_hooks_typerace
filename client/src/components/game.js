@@ -72,8 +72,11 @@ const Game = () => {
   const setup = () => {
     // randomize the index of the quotes array to select a quote (always excluding previous quote that user just had)
     let randomQuote;
+    let randomQuoteId;
     if (prevQuote === "") {
-      randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      let randNum = Math.floor(Math.random() * quotes.length);
+      randomQuote = quotes[randNum].quote;
+      randomQuoteId = quotes[randNum]._id;
     }
     else {
       // whatever prevQuote is, splice it out of the quotes array
@@ -82,21 +85,20 @@ const Game = () => {
       // ALSO FINDING THAT you can't just set a new varaible equal to a state variable, or else state changes
       let tempQuotes = [];
       for (let i = 0; i < quotes.length; i++) {
-        tempQuotes.push(quotes[i]);
+        tempQuotes.push(quotes[i].quote);
       }
       tempQuotes.splice(tempQuotes.indexOf(prevQuote), 1);
-      randomQuote = tempQuotes[Math.floor(Math.random() * tempQuotes.length)];
-      console.log(`is quotes getting smaller? ${tempQuotes}`)
+      let randNum = Math.floor(Math.random() * tempQuotes.length);
+      randomQuote = tempQuotes[randNum];
+      randomQuoteId = quotes[randNum]._id;
     }
     console.log(randomQuote);
-    // setSelection([randomQuote.quote]);
-    setSelection([randomQuote]);
+    setSelection([randomQuote, randomQuoteId]);
     setprevQuote(randomQuote);
     setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
 
     setReplay(false);
-    // getScores(randomQuote.quote);
-    getScores(randomQuote);
+    getScores(randomQuoteId);
   }
 
   const reset = () => {
@@ -142,7 +144,7 @@ const Game = () => {
 
   const addScore = (localScore) => {
     let obj = {
-      quote: selection[0],
+      quote: selection[1],
       score: localScore,
     }
     console.log("adding score")
@@ -162,7 +164,7 @@ const Game = () => {
       onCloseModal();
       localStorage.setItem("currentName", obj.name);
       localStorage.setItem("currentScore", obj.score);
-      getScores(selection[0]);
+      getScores(selection[1]);
     });
     
   }
@@ -250,11 +252,20 @@ const Game = () => {
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
-    axios.get("/scrape").then((response) => {
-      setQuotes(response.data)
-      setFirstRender(false);
-    }
-    )
+    // check if db is empty- if so then scrape
+    axios.get("/api/checkforquote").then(response => {
+      if (response.data.length === 0) {
+        axios.get("/scrape").then((response) => {
+          setQuotes(response.data)
+          setFirstRender(false);
+        }
+        );
+      }
+      else {
+        setFirstRender(false);
+        setQuotes(response.data)
+      }
+    })
   }, [])
 
   useEffect(() => {

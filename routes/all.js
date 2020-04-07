@@ -16,6 +16,8 @@ passport.deserializeUser(db.Users.deserializeUser());
 // /The connect-ensure-login package is middleware that ensures a user is logged in.
 const connectEnsureLogin = require("connect-ensure-login");
 
+// As of 4/6/2020 this route is used solely for scraping articles and getting them into the db (basically an exercise
+// for scraping, as it would have been easier to just manually seed.  However this can extend usefulness to doing daily scrapes from CNN)
 router.get("/scrape", function (req, res) {
   axios.get("https://www.universalclass.com/articles/self-help/keyboarding-practice-sentence-repetition.htm").then((response) => {
 
@@ -58,7 +60,6 @@ router.get("/scrape", function (req, res) {
       }
       res.json(docs);
     });
-    // res.json(func1(quoteArray));
   });
 });
 
@@ -86,7 +87,7 @@ router.get("/api/user/:id", (req, res) => {
 
 router.get("/api/quote/:quote", (req, res) => {
   console.log(`gotta add the question mark to this ${req.params.quote}`)
-  db.Quotes.findOne({ quote: req.params.quote}).populate("scores")
+  db.Quotes.findById(req.params.quote).populate("scores")
     .then(response => {
       console.log(`response that is not popping up is ${response}`)
       if (response != undefined) {
@@ -134,9 +135,8 @@ router.post("/api/quote", (req, res) => {
 
   console.log(`req.body is ${JSON.stringify(req.body)}`)
 
-  let poster = (quoteId) => {
     let obj = {
-      quote: quoteId,
+      quote: req.body.quote,
       name: req.body.name,
       score: req.body.score,
     }
@@ -186,22 +186,6 @@ router.post("/api/quote", (req, res) => {
       }
       )
     })
-  }
-
-  db.Quotes.findOne({ quote: req.body.quote }).then(response => {
-    // if there already exists this quote in the db, post your score
-    if (response != null) {
-      console.log("FOUND QUOTE")
-      poster(response._id);
-    }
-    // but if no quote is found, then create the quote, then post your score 
-    else {
-      console.log("COULD NOT FIND QUOTE")
-      db.Quotes.create({ quote: req.body.quote }).then((response) => {
-        poster(response._id);
-      })
-    }
-  }).catch(err => res.json(err))
 });
 
 router.post("/api/login", (req, res, next) => {

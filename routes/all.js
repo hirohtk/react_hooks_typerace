@@ -72,8 +72,14 @@ router.get("/scrape", function (req, res) {
 // })
 
 router.get("/api/user/:id", (req, res) => {
-  db.Users.findById(req.params.id).populate({path: "scores quote"}).then(response => {
+  db.Users.findById(req.params.id).populate("history.score history.quote").then(response => {
     console.log(`well response is ${response}`);
+    for (let i = 0; i < response.history.length; i++) {
+      console.log("***********************************")
+      console.log(`quote ${i} ${response.history[i].quote}`);
+      console.log(`score ${i} ${response.history[i].score}`);
+      console.log("***********************************")
+    }
     res.json(response);
   });
 })
@@ -95,9 +101,7 @@ router.get("/api/checkforquote", (req, res) => {
 router.get("/api/quote/:quote", (req, res) => {
   db.Quotes.findById(req.params.quote).populate("scores")
     .then(response => {
-      console.log(`response that is not popping up is ${response}`)
       if (response.scores.length != 0) {
-        console.log(`response from quote route after populating scores is ${response}`)
         // 1.  get all scores into objects that contain the name and score
         let unsortedObjects = []
         for (let i = 0; i < response.scores.length; i++) {

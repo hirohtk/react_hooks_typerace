@@ -85,16 +85,17 @@ const Game = () => {
       // ALSO FINDING THAT you can't just set a new varaible equal to a state variable, or else state changes
       let tempQuotes = [];
       for (let i = 0; i < quotes.length; i++) {
-        tempQuotes.push(quotes[i].quote);
+        tempQuotes.push({quote: quotes[i].quote, _id: quotes[i]._id});
       }
       tempQuotes.splice(tempQuotes.indexOf(prevQuote), 1);
       let randNum = Math.floor(Math.random() * tempQuotes.length);
-      randomQuote = tempQuotes[randNum];
-      randomQuoteId = quotes[randNum]._id;
+      randomQuote = tempQuotes[randNum].quote;
+      randomQuoteId = tempQuotes[randNum]._id;
     }
-    console.log(randomQuote);
+    console.log(`*** The quote that you're typing is ${randomQuote}`);
+    console.log(`*** its ID is ${randomQuoteId}`);
     setSelection([randomQuote, randomQuoteId]);
-    setprevQuote(randomQuote);
+    setprevQuote(randomQuoteId);
     setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
 
     setReplay(false);
@@ -147,7 +148,8 @@ const Game = () => {
       quote: selection[1],
       score: localScore,
     }
-    console.log("adding score")
+    console.log(`*** adding score, the quote is ${selection[0]}`)
+    console.log(`*** adding score, the quoteId is ${selection[1]}`)
     if (loggedIn === true) {
       obj.name = currentUser[0];
       obj.id = currentUser[1];
@@ -158,9 +160,9 @@ const Game = () => {
       obj.name = pubUserName;
       console.log("NOT LOGGED IN")
     }
-    console.log(obj);
+    console.log(`obj sent to backend is ${JSON.stringify(obj)}`);
     axios.post("/api/quote", obj).then((response) => {
-      console.log(response);
+      console.log(`the response I'm getting from posting a score is ${JSON.stringify(response.data)}`);
       onCloseModal();
       localStorage.setItem("currentName", obj.name);
       localStorage.setItem("currentScore", obj.score);
@@ -249,21 +251,26 @@ const Game = () => {
     };
   }
 
+  const startGame = () => {
+    setFirstRender(false);
+    setup();
+  }
+
   // THIS IS HOW YOU DO ASYNCHRONOUS THINGS- useEffect fires at the refresh of component
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
     // check if db is empty- if so then scrape
     axios.get("/api/checkforquote").then(response => {
       if (response.data.length === 0) {
+        console.log("IF STATEMENT FIRING")
         axios.get("/scrape").then((response) => {
-          setQuotes(response.data)
-          setFirstRender(false);
+          setQuotes(response.data);
         }
         );
       }
       else {
-        setFirstRender(false);
-        setQuotes(response.data)
+        console.log("ELSE STATEMENT FIRING")
+        setQuotes(response.data);
       }
     })
   }, [])
@@ -276,10 +283,11 @@ const Game = () => {
       return;
     }
     // if either quotes or replay state changes, then setup().  re-using this effect for initial game setup and also for resetting the game
-    if (quotes || replay) {
+    if (replay) {
+      console.log("**replay has changed, setting up**")
       setup();
     }
-  }, [quotes, replay])
+  }, [replay])
 
   useEffect(() => {
     if (firstMount.current === true) {
@@ -336,7 +344,9 @@ const Game = () => {
           : null}
         <br></br>
 
-        {gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
+        {firstRender === true ? <button onClick={() => startGame()}>Start!</button> 
+        : 
+        gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
         <br></br>
 
         {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>

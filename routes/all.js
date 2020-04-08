@@ -91,7 +91,7 @@ router.get("/api/user/:id", (req, res) => {
         sortedObjects.push(unsortedHistory[index])
       }
 
-      res.json(sortedObjects.slice(0, 4));
+      res.json(sortedObjects.slice(0, 5));
   });
 })
 

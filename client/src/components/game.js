@@ -120,13 +120,15 @@ const Game = () => {
     axios.get(`/api/quote/${currentQuote}`).then((response) => {
       console.log(`response from quering current quote scores is ${JSON.stringify(response.data)}`)
       setScores(response.data);
-      if (loggedIn === true) {
-        console.log(`current user id is ${currentUser[1]}`)
-        axios.get(`/api/user/${currentUser[1]}`).then((response) => {
-          console.log(response.data.history);
-          setStats(response.data.history);
-        })
-      }
+      getStats();
+    })
+  }
+
+  const getStats = () => {
+    console.log(`current user id is ${currentUser[1]}`)
+    axios.get(`/api/user/${currentUser[1]}`).then((response) => {
+      console.log(response.data);
+      setStats(response.data);
     })
   }
 
@@ -186,6 +188,7 @@ const Game = () => {
   const logOut = () => {
     setLoggedIn(false);
     setCurrentUser([]);
+    setStats([]);
   }
 
   const loginRegisterGate = (event) => {
@@ -217,6 +220,7 @@ const Game = () => {
           setUserName("");
           setCurrentUser([response.data.username, response.data.id]);
           setUserPassword("");
+          getStats();
           // GRAB USER DETAILS -- response.data is the username
         }
       });
@@ -386,14 +390,15 @@ const Game = () => {
               <table >
                 <tbody>
                   <tr>
+                  <th>Rank</th>
                     <th>Name</th>
                     <th>Score (milliseconds)</th>
                   </tr>
                   {scores.map((each, index) =>
                     each.name === localStorage.currentName && each.score === localStorage.currentScore ?
-                      <tr key={index}><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
+                      <tr key={index}><td className="gold">{index + 1}</td><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
                       :
-                      <tr key={index}><td>{each.name}</td><td>{each.score}</td></tr>
+                      <tr key={index}><td>{index + 1}</td><td>{each.name}</td><td>{each.score}</td></tr>
                   )}
                 </tbody>
               </table>
@@ -401,7 +406,7 @@ const Game = () => {
               "")
         }
 
-        <UserStats firstRender={firstRender}>
+        <UserStats firstRender={firstRender} history={stats} loggedIn={loggedIn}>
 
         </UserStats>
         {/* 

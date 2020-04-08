@@ -123,7 +123,8 @@ const Game = () => {
       if (loggedIn === true) {
         console.log(`current user id is ${currentUser[1]}`)
         axios.get(`/api/user/${currentUser[1]}`).then((response) => {
-          console.log(response);
+          console.log(response.data.history);
+          setStats(response.data.history);
         })
       }
     })

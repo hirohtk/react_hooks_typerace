@@ -5,6 +5,7 @@ import Modal from "react-responsive-modal"
 import "./game.css"
 import Timer from "react-compound-timer"
 import Nav from './nav'
+import UserStats from "./userstats"
 
 const Game = () => {
 
@@ -85,7 +86,7 @@ const Game = () => {
       // ALSO FINDING THAT you can't just set a new varaible equal to a state variable, or else state changes
       let tempQuotes = [];
       for (let i = 0; i < quotes.length; i++) {
-        tempQuotes.push({quote: quotes[i].quote, _id: quotes[i]._id});
+        tempQuotes.push({ quote: quotes[i].quote, _id: quotes[i]._id });
       }
       tempQuotes.splice(tempQuotes.indexOf(prevQuote), 1);
       let randNum = Math.floor(Math.random() * tempQuotes.length);
@@ -168,7 +169,7 @@ const Game = () => {
       localStorage.setItem("currentScore", obj.score);
       getScores(selection[1]);
     });
-    
+
   }
 
   const promptLogin = () => {
@@ -187,12 +188,12 @@ const Game = () => {
   }
 
   const loginRegisterGate = (event) => {
-      if (event.target.name === "username") {
-        setUserName(event.target.value);
-      }
-      else {
-        setUserPassword(event.target.value);
-      }
+    if (event.target.name === "username") {
+      setUserName(event.target.value);
+    }
+    else {
+      setUserPassword(event.target.value);
+    }
   }
 
   const doLogOrReg = () => {
@@ -344,9 +345,9 @@ const Game = () => {
           : null}
         <br></br>
 
-        {firstRender === true ? <button onClick={() => startGame()}>Start!</button> 
-        : 
-        gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
+        {firstRender === true ? <button onClick={() => startGame()}>Start!</button>
+          :
+          gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
         <br></br>
 
         {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
@@ -359,22 +360,24 @@ const Game = () => {
               <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
               <button onClick={doLogOrReg}>Submit</button>
             </div>
-          : registering === true ? 
-          <div>
-          <h1>User Registration</h1>
-          <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
-          <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
-          <button onClick={doLogOrReg}>Submit</button>
-        </div>
-            : 
-            <div>
-            Game finished in {gameState.totalTime} milliseconds. <br></br>
-            Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
-            <button onClick={() => addScore(gameState.totalTime)}>Submit</button>
-            </div>}
+            : registering === true ?
+              <div>
+                <h1>User Registration</h1>
+                <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
+                <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
+                <button onClick={doLogOrReg}>Submit</button>
+              </div>
+              :
+              <div>
+                Game finished in {gameState.totalTime} milliseconds. <br></br>
+                Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
+                <button onClick={() => addScore(gameState.totalTime)}>Submit</button>
+              </div>}
         </Modal>
 
-        <h2 className="centerAlign">High scores on this quote:</h2>
+        {(firstRender === true) ? "" :
+          <h2 className="centerAlign">High scores on this quote:</h2>
+        }
         {
           (firstRender === false && scores.name === "No Scores yet on this quote!") ?
             <h2 className="centerAlign">No Scores yet on this quote</h2> :
@@ -396,9 +399,10 @@ const Game = () => {
               :
               "")
         }
-        <div id="userSection">
 
-        </div>
+        <UserStats firstRender={firstRender}>
+
+        </UserStats>
         {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW

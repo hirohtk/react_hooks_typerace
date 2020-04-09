@@ -120,13 +120,15 @@ const Game = () => {
     axios.get(`/api/quote/${currentQuote}`).then((response) => {
       console.log(`response from quering current quote scores is ${JSON.stringify(response.data)}`)
       setScores(response.data);
-      getStats();
+      if (loggedIn === true) {
+        getStats(currentUser[1]);
+      }
     })
   }
 
-  const getStats = () => {
-    console.log(`current user id is ${currentUser[1]}`)
-    axios.get(`/api/user/${currentUser[1]}`).then((response) => {
+  const getStats = (id) => {
+    console.log(`current user id is ${id}`)
+    axios.get(`/api/user/${id}`).then((response) => {
       console.log(response.data);
       setStats(response.data);
     })
@@ -214,13 +216,13 @@ const Game = () => {
         else if (response.data === "Failure") {
         }
         else {
+          setCurrentUser([response.data.username, response.data.id]);
           onCloseModal();
           setLoggingIn(false);
           setLoggedIn(true);
           setUserName("");
-          setCurrentUser([response.data.username, response.data.id]);
           setUserPassword("");
-          getStats();
+          getStats(response.data.id);
           // GRAB USER DETAILS -- response.data is the username
         }
       });
@@ -266,6 +268,7 @@ const Game = () => {
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
     // check if db is empty- if so then scrape
+    localStorage.clear();
     axios.get("/api/checkforquote").then(response => {
       if (response.data.length === 0) {
         console.log("IF STATEMENT FIRING")
@@ -345,7 +348,7 @@ const Game = () => {
                 {/*  if you have two characters, the array will render two each's, and so forth */}
                 <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
               </div>
-              : ""}
+              : <div style={{height: "3.6rem"}}></div>}
           </div>
           : null}
         <br></br>

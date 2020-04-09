@@ -330,8 +330,8 @@ const Game = () => {
 
         {gameState.prepared === true && gameState.victory === false ?
           <div>
-            <input id="textbox"
-              value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length} maxLength={selection[0].length}>
+            <input id="textbox" class="blockquote mb-0"
+              value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length - 10} maxLength={selection[0].length}>
             </input>
             <br></br>
             {gameState.timer === true ?

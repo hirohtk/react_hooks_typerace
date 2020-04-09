@@ -5,6 +5,15 @@ import Modal from "react-responsive-modal"
 import "./game.css"
 import Timer from "react-compound-timer"
 import Nav from './nav'
+import UserStats from "./userstats"
+
+// Import react-circular-progressbar module and styles
+import {
+  CircularProgressbar,
+  CircularProgressbarWithChildren,
+  buildStyles
+} from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
 
 const Game = () => {
 
@@ -39,6 +48,7 @@ const Game = () => {
   const [userPassword, setUserPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [stats, setStats] = useState([]);
+  const [progress, setProgress] = useState(0);
 
   const updateUserText = event => {
     if (gameState.startTime === null) {
@@ -46,7 +56,11 @@ const Game = () => {
     }
     setUserText(event.target.value);
     setChecker(checkBot(event.target.value, selection[0]));
-
+    console.log(`event.target.value is ${event.target.value} and its length is ${event.target.value.length}`)
+    console.log(`selection[0] is ${selection[0]} and its length is ${selection[0].length}`)
+    let howFarAlong = Math.floor((event.target.value.length / selection[0].length)*100);
+    console.log(howFarAlong);
+    setProgress(howFarAlong);
     // need to do this with event.target.value, not userText
     if (event.target.value === selection[0].trim()) {
       let finishTime = new Date().getTime();
@@ -85,7 +99,7 @@ const Game = () => {
       // ALSO FINDING THAT you can't just set a new varaible equal to a state variable, or else state changes
       let tempQuotes = [];
       for (let i = 0; i < quotes.length; i++) {
-        tempQuotes.push({quote: quotes[i].quote, _id: quotes[i]._id});
+        tempQuotes.push({ quote: quotes[i].quote, _id: quotes[i]._id });
       }
       tempQuotes.splice(tempQuotes.indexOf(prevQuote), 1);
       let randNum = Math.floor(Math.random() * tempQuotes.length);
@@ -120,11 +134,16 @@ const Game = () => {
       console.log(`response from quering current quote scores is ${JSON.stringify(response.data)}`)
       setScores(response.data);
       if (loggedIn === true) {
-        console.log(`current user id is ${currentUser[1]}`)
-        axios.get(`/api/user/${currentUser[1]}`).then((response) => {
-          console.log(response);
-        })
+        getStats(currentUser[1]);
       }
+    })
+  }
+
+  const getStats = (id) => {
+    console.log(`current user id is ${id}`)
+    axios.get(`/api/user/${id}`).then((response) => {
+      console.log(response.data);
+      setStats(response.data);
     })
   }
 
@@ -168,7 +187,7 @@ const Game = () => {
       localStorage.setItem("currentScore", obj.score);
       getScores(selection[1]);
     });
-    
+
   }
 
   const promptLogin = () => {
@@ -184,15 +203,16 @@ const Game = () => {
   const logOut = () => {
     setLoggedIn(false);
     setCurrentUser([]);
+    setStats([]);
   }
 
   const loginRegisterGate = (event) => {
-      if (event.target.name === "username") {
-        setUserName(event.target.value);
-      }
-      else {
-        setUserPassword(event.target.value);
-      }
+    if (event.target.name === "username") {
+      setUserName(event.target.value);
+    }
+    else {
+      setUserPassword(event.target.value);
+    }
   }
 
   const doLogOrReg = () => {
@@ -209,12 +229,13 @@ const Game = () => {
         else if (response.data === "Failure") {
         }
         else {
+          setCurrentUser([response.data.username, response.data.id]);
           onCloseModal();
           setLoggingIn(false);
           setLoggedIn(true);
           setUserName("");
-          setCurrentUser([response.data.username, response.data.id]);
           setUserPassword("");
+          getStats(response.data.id);
           // GRAB USER DETAILS -- response.data is the username
         }
       });
@@ -260,6 +281,7 @@ const Game = () => {
   // BY HAVING [], THIS MIMICS componentDidMount, meaning it will only fire once
   useEffect(() => {
     // check if db is empty- if so then scrape
+    localStorage.clear();
     axios.get("/api/checkforquote").then(response => {
       if (response.data.length === 0) {
         console.log("IF STATEMENT FIRING")
@@ -321,8 +343,8 @@ const Game = () => {
 
         {gameState.prepared === true && gameState.victory === false ?
           <div>
-            <input id="textbox"
-              value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length} maxLength={selection[0].length}>
+            <input id="textbox" class="blockquote mb-0"
+              value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length - 10} maxLength={selection[0].length}>
             </input>
             <br></br>
             {gameState.timer === true ?
@@ -338,15 +360,16 @@ const Game = () => {
                 </Timer>
                 {/*  if you have two characters, the array will render two each's, and so forth */}
                 <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
+                <CircularProgressbar value={progress} text={`${progress}%`}/>
               </div>
-              : ""}
+              : <div style={{height: "3.6rem"}}></div>}
           </div>
           : null}
         <br></br>
 
-        {firstRender === true ? <button onClick={() => startGame()}>Start!</button> 
-        : 
-        gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
+        {firstRender === true ? <button onClick={() => startGame()}>Start!</button>
+          :
+          gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
         <br></br>
 
         {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
@@ -359,22 +382,24 @@ const Game = () => {
               <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
               <button onClick={doLogOrReg}>Submit</button>
             </div>
-          : registering === true ? 
-          <div>
-          <h1>User Registration</h1>
-          <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
-          <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
-          <button onClick={doLogOrReg}>Submit</button>
-        </div>
-            : 
-            <div>
-            Game finished in {gameState.totalTime} milliseconds. <br></br>
-            Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
-            <button onClick={() => addScore(gameState.totalTime)}>Submit</button>
-            </div>}
+            : registering === true ?
+              <div>
+                <h1>User Registration</h1>
+                <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
+                <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
+                <button onClick={doLogOrReg}>Submit</button>
+              </div>
+              :
+              <div>
+                Game finished in {gameState.totalTime} milliseconds. <br></br>
+                Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
+                <button onClick={() => addScore(gameState.totalTime)}>Submit</button>
+              </div>}
         </Modal>
 
-        <h2 className="centerAlign">High scores on this quote:</h2>
+        {(firstRender === true) ? "" :
+          <h2 className="centerAlign">High scores on this quote:</h2>
+        }
         {
           (firstRender === false && scores.name === "No Scores yet on this quote!") ?
             <h2 className="centerAlign">No Scores yet on this quote</h2> :
@@ -382,23 +407,25 @@ const Game = () => {
               <table >
                 <tbody>
                   <tr>
+                  <th>Rank</th>
                     <th>Name</th>
                     <th>Score (milliseconds)</th>
                   </tr>
                   {scores.map((each, index) =>
                     each.name === localStorage.currentName && each.score === localStorage.currentScore ?
-                      <tr key={index}><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
+                      <tr key={index}><td className="gold">{index + 1}</td><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
                       :
-                      <tr key={index}><td>{each.name}</td><td>{each.score}</td></tr>
+                      <tr key={index}><td>{index + 1}</td><td>{each.name}</td><td>{each.score}</td></tr>
                   )}
                 </tbody>
               </table>
               :
               "")
         }
-        <div id="userSection">
 
-        </div>
+        <UserStats firstRender={firstRender} history={stats} loggedIn={loggedIn}>
+
+        </UserStats>
         {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW

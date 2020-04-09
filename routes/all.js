@@ -63,24 +63,35 @@ router.get("/scrape", function (req, res) {
   });
 });
 
-// Model.find().populate({
-//   path: 'friends author'        // either single path or multiple space delimited paths
-// , select: 'name age'            // optional
-// , model: 'ModelName'            // optional
-// , match: { age: { $gte: 18 }}   // optional
-// , options: { sort: { age: -1 }} // optional
-// })
-
 router.get("/api/user/:id", (req, res) => {
   db.Users.findById(req.params.id).populate("history.score history.quote").then(response => {
-    console.log(`well response is ${response}`);
+
+    let unsortedHistory = [];
+    
     for (let i = 0; i < response.history.length; i++) {
-      console.log("***********************************")
-      console.log(`quote ${i} ${response.history[i].quote}`);
-      console.log(`score ${i} ${response.history[i].score}`);
-      console.log("***********************************")
+        unsortedHistory.push(
+          {
+            quote: response.history[i].quote.quote,
+            score: response.history[i].score.score,
+          })
     }
-    res.json(response);
+      // 2. take the score from each of the objects above (i.e. create new array with .map), and sort them lowest to highest
+      // this will NOT keep the index (it does after .map, but not after .sort)
+      let sortedScores = (unsortedHistory.map((each) => each.score)).sort((a, b) => { return a - b });
+      let sortedObjects = []
+
+      for (let j = 0; j < unsortedHistory.length; j++) {
+        // 3. 
+        // find the index of the score in the unsortedArray that matches those of the sortedScores
+        // sortedScores is already an array containing (just scores) going from lowest to highest
+        let index = unsortedHistory.findIndex((eeeach) => { return eeeach.score === sortedScores[j] })
+        // 4.
+        // index 0 (of the sortedscores) is the lowest score, so push this onto the sortedObject array as the first index, too.
+        // duplicate scores (which in this application are rare anyway) shouldn't matter as the name can be attributed to either score 
+        sortedObjects.push(unsortedHistory[index])
+      }
+
+      res.json(sortedObjects.slice(0, 5));
   });
 })
 
@@ -90,13 +101,6 @@ router.get("/api/checkforquote", (req, res) => {
     res.json(response);
   })
 })
-
-// router.get("/api/user/:id", (req, res) => {
-//   db.Users.findById(req.params.id).populate("scores").populate("quote").then(response => {
-//     console.log(`well response is ${response}`);
-//     res.json(response);
-//   });
-// })
 
 router.get("/api/quote/:quote", (req, res) => {
   db.Quotes.findById(req.params.quote).populate("scores")
@@ -165,27 +169,6 @@ router.post("/api/quote", (req, res) => {
               res.json(response)
             }
           )
-
-          // db.Users.findByIdAndUpdate(obj.id, { $push: { history: {quote: quoteId, score: scoreID} }}).then(
-          //   response => {
-          //     console.log(`posted to user.  response is ${response}`);
-          //     res.json(response)
-          //   }
-          // )
-
-          // let testobj = {
-          //   both: {
-          //     quote: quoteId,
-          //     score: scoreID
-          //   }
-          // }
-          // db.Users.findByIdAndUpdate(obj.id, { $push: {history: testobj } }).then(
-          //   response => {
-          //     console.log(`posted to user.  response is ${response}`);
-          //     res.json(response)
-          //   }
-          // )
-
         }
         else {
           console.log("NOT LOGGED IN")

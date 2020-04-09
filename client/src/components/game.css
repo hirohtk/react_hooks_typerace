@@ -48,4 +48,7 @@ background-color: pink;
     border-color: teal;
 }
 
-
+.CircularProgressbar {
+    height: 100px;
+    width: 100px;
+}

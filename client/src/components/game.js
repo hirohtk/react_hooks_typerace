@@ -7,6 +7,14 @@ import Timer from "react-compound-timer"
 import Nav from './nav'
 import UserStats from "./userstats"
 
+// Import react-circular-progressbar module and styles
+import {
+  CircularProgressbar,
+  CircularProgressbarWithChildren,
+  buildStyles
+} from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+
 const Game = () => {
 
   // hook that sets "" as the initial value for both userText, setUserText
@@ -40,6 +48,7 @@ const Game = () => {
   const [userPassword, setUserPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [stats, setStats] = useState([]);
+  const [progress, setProgress] = useState(0);
 
   const updateUserText = event => {
     if (gameState.startTime === null) {
@@ -47,7 +56,11 @@ const Game = () => {
     }
     setUserText(event.target.value);
     setChecker(checkBot(event.target.value, selection[0]));
-
+    console.log(`event.target.value is ${event.target.value} and its length is ${event.target.value.length}`)
+    console.log(`selection[0] is ${selection[0]} and its length is ${selection[0].length}`)
+    let howFarAlong = Math.floor((event.target.value.length / selection[0].length)*100);
+    console.log(howFarAlong);
+    setProgress(howFarAlong);
     // need to do this with event.target.value, not userText
     if (event.target.value === selection[0].trim()) {
       let finishTime = new Date().getTime();
@@ -347,6 +360,7 @@ const Game = () => {
                 </Timer>
                 {/*  if you have two characters, the array will render two each's, and so forth */}
                 <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
+                <CircularProgressbar value={progress} text={`${progress}%`}/>
               </div>
               : <div style={{height: "3.6rem"}}></div>}
           </div>

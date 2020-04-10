@@ -37,6 +37,7 @@
     "passport-local-mongoose": "^6.0.1",
     "react-circular-progressbar": "^2.0.3",
     "react-compound-timer": "^1.1.15",
-    "react-responsive-modal": "^4.0.1"
+    "react-responsive-modal": "^4.0.1",
+    "react-toastify": "^5.5.0"
   }
 }

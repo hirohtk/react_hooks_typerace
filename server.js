@@ -4,7 +4,6 @@ const app = express();
 const routes = require("./routes/all");
 const PORT = process.env.PORT || 3001;
 const passport = require('passport');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 // AUTH stuff
 // DIRECTLY BELOW NOT NEEDED (this is from tutorial.  express.urlencoded works with Express v4.16+)

@@ -7,6 +7,7 @@ import Timer from "react-compound-timer"
 import Nav from './nav'
 import UserStats from "./userstats"
 
+
 // Import react-circular-progressbar module and styles
 import {
   CircularProgressbar,
@@ -14,6 +15,9 @@ import {
   buildStyles
 } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Game = () => {
 
@@ -58,7 +62,7 @@ const Game = () => {
     setChecker(checkBot(event.target.value, selection[0]));
     console.log(`event.target.value is ${event.target.value} and its length is ${event.target.value.length}`)
     console.log(`selection[0] is ${selection[0]} and its length is ${selection[0].length}`)
-    let howFarAlong = Math.floor((event.target.value.length / selection[0].length)*100);
+    let howFarAlong = Math.floor((event.target.value.length / selection[0].length) * 100);
     console.log(howFarAlong);
     setProgress(howFarAlong);
     // need to do this with event.target.value, not userText
@@ -215,6 +219,16 @@ const Game = () => {
     }
   }
 
+  const notify = (condition, message) => {
+    if (condition === "success") {
+      toast.success(message);
+    }
+    else if (condition === "failure") {
+      toast.error(message);
+    }
+  }
+  ;
+
   const doLogOrReg = () => {
     let credentials = {
       username: userName,
@@ -227,6 +241,7 @@ const Game = () => {
         if (err) {
         }
         else if (response.data === "Failure") {
+          notify("failure", `Error: Username and/or Password incorrect.`);
         }
         else {
           setCurrentUser([response.data.username, response.data.id]);
@@ -236,6 +251,7 @@ const Game = () => {
           setUserName("");
           setUserPassword("");
           getStats(response.data.id);
+          notify("success",`${response.data.username} is now logged in!`);
           // GRAB USER DETAILS -- response.data is the username
         }
       });
@@ -245,12 +261,14 @@ const Game = () => {
       axios.post("/api/register", credentials).then((response, err) => {
         console.log(response.data);
         if (err) {
+          notify("failure", `Registration Failed!`);
         }
         else {
           onCloseModal();
           setRegistering(false);
           setUserName("");
           setUserPassword("");
+          notify("success", `${credentials.username} is now registered!`);
           // GRAB USER DETAILS -- response.data is the username
         }
       });
@@ -360,9 +378,9 @@ const Game = () => {
                 </Timer>
                 {/*  if you have two characters, the array will render two each's, and so forth */}
                 <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
-                <CircularProgressbar value={progress} text={`${progress}%`}/>
+                {/* <CircularProgressbar value={progress} text={`${progress}%`}/> */}
               </div>
-              : <div style={{height: "3.6rem"}}></div>}
+              : <div style={{ height: "3.6rem" }}></div>}
           </div>
           : null}
         <br></br>
@@ -407,7 +425,7 @@ const Game = () => {
               <table >
                 <tbody>
                   <tr>
-                  <th>Rank</th>
+                    <th>Rank</th>
                     <th>Name</th>
                     <th>Score (milliseconds)</th>
                   </tr>
@@ -422,7 +440,16 @@ const Game = () => {
               :
               "")
         }
-
+        <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnVisibilityChange
+        draggable
+        pauseOnHover={false}></ToastContainer>
         <UserStats firstRender={firstRender} history={stats} loggedIn={loggedIn}>
 
         </UserStats>

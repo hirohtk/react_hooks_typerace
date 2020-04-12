@@ -150,15 +150,18 @@ const Game = () => {
     axios.get(`/api/user/${id}`).then((response) => {
       // console.log(`getting stats, response.data is ${response.data}`);
       setStats(response.data);
-
+      let indexThatChanged;
       let arrEquals = (arr1, arr2) => {
         // first of all, arrays should be same length
         if (arr1.length != arr2.length) {
+          indexThatChanged = arr2.length;
           return false;
         }
         // then, check each array object's key values for equality
         else {
-          for (let i = 0; i < arr1.length; i++) {
+          for (let i = 1; i < arr1.length; i++) {
+            indexThatChanged = i;
+            console.log(i);
             if (arr1[i].quote != arr2[i].quote || arr1[i].score != arr2[i].score) {
               return false;
             }
@@ -174,7 +177,7 @@ const Game = () => {
       else if (arrEquals(prevStats, response.data) === false) {
         console.log("prevStats is " + JSON.stringify(prevStats))
         console.log("response.data is " + JSON.stringify(response.data))
-        console.log("there is a difference between previous stats, and response")
+        console.log(`there is a difference between previous stats, and response in position ${indexThatChanged}`)
         setPrevStats(response.data);
       }
       else {

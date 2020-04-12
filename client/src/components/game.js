@@ -179,6 +179,16 @@ const Game = () => {
         console.log("response.data is " + JSON.stringify(response.data))
         console.log(`there is a difference between previous stats, and response in position ${indexThatChanged}`)
         setPrevStats(response.data);
+        for (let j = 0; j < response.data.length; j++) {
+          if (j === indexThatChanged - 1) {
+            response.data[j].changed = true;
+          }
+          else {
+            response.data[j].changed = false;
+          }
+        }
+        console.log(`adding changed to response.data ${JSON.stringify(response.data)}`)
+        setStats(response.data);
       }
       else {
         console.log("no change in stats")

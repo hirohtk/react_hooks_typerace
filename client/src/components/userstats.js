@@ -15,8 +15,12 @@ const UserStats = (props) => {
                                 <th>Quote</th>
                                 <th>Score (milliseconds)</th>
                             </tr>
-                            {props.history.map((each, index) =>
-                                    <tr key={index}><td>{index + 1}</td><td>{each.quote}</td><td>{each.score}</td></tr>
+                            {props.history.map((each, index) => (
+                                each.name === localStorage.currentName && each.score === localStorage.currentScore ? 
+                                <tr key={index}><td className="gold">{index + 1}</td><td className="gold">{each.quote}</td><td className="gold">{each.score}</td></tr> 
+                                :
+                                <tr key={index}><td>{index + 1}</td><td>{each.quote}</td><td>{each.score}</td></tr>
+                            )
                             )}
                         </tbody>
                     </table>

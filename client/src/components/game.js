@@ -18,6 +18,7 @@ import "react-circular-progressbar/dist/styles.css";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { json } from 'body-parser';
 
 const Game = () => {
 
@@ -52,6 +53,7 @@ const Game = () => {
   const [userPassword, setUserPassword] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [stats, setStats] = useState([]);
+  const [prevStats, setPrevStats] = useState([]);
   const [progress, setProgress] = useState(0);
 
   const updateUserText = event => {
@@ -60,8 +62,8 @@ const Game = () => {
     }
     setUserText(event.target.value);
     setChecker(checkBot(event.target.value, selection[0]));
-    console.log(`event.target.value is ${event.target.value} and its length is ${event.target.value.length}`)
-    console.log(`selection[0] is ${selection[0]} and its length is ${selection[0].length}`)
+    // console.log(`event.target.value is ${event.target.value} and its length is ${event.target.value.length}`)
+    // console.log(`selection[0] is ${selection[0]} and its length is ${selection[0].length}`)
     let howFarAlong = Math.floor((event.target.value.length / selection[0].length) * 100);
     console.log(howFarAlong);
     setProgress(howFarAlong);
@@ -72,7 +74,7 @@ const Game = () => {
       setGameState({ ...gameState, victory: true, endTime: finishTime, totalTime: totalTime, timer: false })
       setUserText("");
       if (loggedIn === true) {
-        console.log('youre logged in, adding score automatically')
+        // console.log('youre logged in, adding score automatically')
         // ASYNC WAS MESSING THIS UP- I'D CALL addScore BEFORE GameState COULD BE UPDATED.  THUS, SCORE WASN'T PRESENT
         addScore(totalTime);
       }
@@ -110,8 +112,8 @@ const Game = () => {
       randomQuote = tempQuotes[randNum].quote;
       randomQuoteId = tempQuotes[randNum]._id;
     }
-    console.log(`*** The quote that you're typing is ${randomQuote}`);
-    console.log(`*** its ID is ${randomQuoteId}`);
+    // console.log(`*** The quote that you're typing is ${randomQuote}`);
+    // console.log(`*** its ID is ${randomQuoteId}`);
     setSelection([randomQuote, randomQuoteId]);
     setprevQuote(randomQuoteId);
     setGameState({ ...gameState, readyMessage: "Clock starts when you start typing...", prepared: true })
@@ -133,9 +135,9 @@ const Game = () => {
   }
 
   const getScores = currentQuote => {
-    console.log(`grabbing scores on ${currentQuote}`);
+    // console.log(`grabbing scores on ${currentQuote}`);
     axios.get(`/api/quote/${currentQuote}`).then((response) => {
-      console.log(`response from quering current quote scores is ${JSON.stringify(response.data)}`)
+      // console.log(`response from quering current quote scores is ${JSON.stringify(response.data)}`)
       setScores(response.data);
       if (loggedIn === true) {
         getStats(currentUser[1]);
@@ -144,10 +146,40 @@ const Game = () => {
   }
 
   const getStats = (id) => {
-    console.log(`current user id is ${id}`)
+    // console.log(`current user id is ${id}`)
     axios.get(`/api/user/${id}`).then((response) => {
-      console.log(response.data);
+      // console.log(`getting stats, response.data is ${response.data}`);
       setStats(response.data);
+
+      let arrEquals = (arr1, arr2) => {
+        // first of all, arrays should be same length
+        if (arr1.length != arr2.length) {
+          return false;
+        }
+        // then, check each array object's key values for equality
+        else {
+          for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i].quote != arr2[i].quote || arr1[i].score != arr2[i].score) {
+              return false;
+            }
+          }
+        }
+        return true;
+      }
+
+      if (prevStats.length === 0) {
+        console.log("setting previous stats");
+        setPrevStats(response.data);
+      }
+      else if (arrEquals(prevStats, response.data) === false) {
+        console.log("prevStats is " + JSON.stringify(prevStats))
+        console.log("response.data is " + JSON.stringify(response.data))
+        console.log("there is a difference between previous stats, and response")
+        setPrevStats(response.data);
+      }
+      else {
+        console.log("no change in stats")
+      }
     })
   }
 
@@ -171,21 +203,21 @@ const Game = () => {
       quote: selection[1],
       score: localScore,
     }
-    console.log(`*** adding score, the quote is ${selection[0]}`)
-    console.log(`*** adding score, the quoteId is ${selection[1]}`)
+    // console.log(`*** adding score, the quote is ${selection[0]}`)
+    // console.log(`*** adding score, the quoteId is ${selection[1]}`)
     if (loggedIn === true) {
       obj.name = currentUser[0];
       obj.id = currentUser[1];
       obj.loggedIn = true;
-      console.log("LOGGED IN")
+      // console.log("LOGGED IN")
     }
     else {
       obj.name = pubUserName;
-      console.log("NOT LOGGED IN")
+      // console.log("NOT LOGGED IN")
     }
-    console.log(`obj sent to backend is ${JSON.stringify(obj)}`);
+    // console.log(`obj sent to backend is ${JSON.stringify(obj)}`);
     axios.post("/api/quote", obj).then((response) => {
-      console.log(`the response I'm getting from posting a score is ${JSON.stringify(response.data)}`);
+      // console.log(`the response I'm getting from posting a score is ${JSON.stringify(response.data)}`);
       onCloseModal();
       localStorage.setItem("currentName", obj.name);
       localStorage.setItem("currentScore", obj.score);
@@ -237,7 +269,7 @@ const Game = () => {
     //login
     if (loggingIn === true) {
       axios.post("/api/login", credentials).then((response, err) => {
-        console.log(response.data);
+        // console.log(response.data);
         if (err) {
         }
         else if (response.data === "Failure") {
@@ -259,7 +291,7 @@ const Game = () => {
     //register
     else if (registering === true) {
       axios.post("/api/register", credentials).then((response, err) => {
-        console.log(response.data);
+        // console.log(response.data);
         if (err) {
           notify("failure", `Registration Failed!`);
         }
@@ -302,14 +334,14 @@ const Game = () => {
     localStorage.clear();
     axios.get("/api/checkforquote").then(response => {
       if (response.data.length === 0) {
-        console.log("IF STATEMENT FIRING")
+        // console.log("IF STATEMENT FIRING")
         axios.get("/scrape").then((response) => {
           setQuotes(response.data);
         }
         );
       }
       else {
-        console.log("ELSE STATEMENT FIRING")
+        // console.log("ELSE STATEMENT FIRING")
         setQuotes(response.data);
       }
     })
@@ -340,7 +372,6 @@ const Game = () => {
       antiCheat(pasteBox);
     }
   }, [gameState.prepared])
-
 
   return (
     <div>

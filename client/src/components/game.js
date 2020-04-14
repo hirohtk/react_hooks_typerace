@@ -177,10 +177,10 @@ const Game = () => {
       else if (arrEquals(prevStats, response.data) === false) {
         console.log("prevStats is " + JSON.stringify(prevStats))
         console.log("response.data is " + JSON.stringify(response.data))
-        console.log(`there is a difference between previous stats, and response in position ${indexThatChanged}`)
+        console.log(`there is a difference between previous stats, and response in position ${indexThatChanged + 1}`)
         setPrevStats(response.data);
         for (let j = 0; j < response.data.length; j++) {
-          if (j === indexThatChanged - 1) {
+          if (j === indexThatChanged) {
             response.data[j].changed = true;
           }
           else {
@@ -253,6 +253,7 @@ const Game = () => {
     setLoggedIn(false);
     setCurrentUser([]);
     setStats([]);
+    setPrevStats([]);
   }
 
   const loginRegisterGate = (event) => {

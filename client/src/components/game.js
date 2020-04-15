@@ -179,20 +179,29 @@ const Game = () => {
         console.log("response.data is " + JSON.stringify(response.data))
         console.log(`there is a difference between previous stats, and response in position ${indexThatChanged + 1}`)
         setPrevStats(response.data);
+        let newObjArr = [];
         for (let j = 0; j < response.data.length; j++) {
+          let newObj = {
+            quote: response.data[j].quote,
+            score: response.data[j].score,
+          }
           if (j === indexThatChanged) {
-            response.data[j].changed = true;
+            newObj.changed = true;
+            // response.data[j].changed = true;
           }
           else {
-            response.data[j].changed = false;
+            newObj.changed = false;
+            // response.data[j].changed = false;
           }
+          newObjArr.push(newObj);
         }
         console.log(`adding changed to response.data ${JSON.stringify(response.data)}`)
-        setStats(response.data);
+        setStats(newObjArr);
       }
       else {
         console.log("no change in stats")
       }
+      console.log(`well, at this point stats from state is ${JSON.stringify(stats)} versus response.data which is ${JSON.stringify(response.data)}`);
     })
   }
 

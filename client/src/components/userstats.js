@@ -17,18 +17,19 @@ const UserStats = (props) => {
                             </tr>
                             {props.history.map((each, index) => (
                                 each.changed === true ? 
-                                <div>
-                                    AAAAH
                                     <tr key={index}><td className="gold">{index + 1}</td><td className="gold">{each.quote}</td><td className="gold">{each.score}</td></tr>
-                                </div>
-                                 
-                                
                                 :
                                 <tr key={index}><td>{index + 1}</td><td>{each.quote}</td><td>{each.score}</td></tr>
                             )
                             )}
                         </tbody>
                     </table>
+                    <div>
+                        Test section
+                        {props.history.map((each, index) => (
+                            <span>{each.quote}{each.score}</span>
+                        ))}
+                    </div>
                 </div>
             }
         </div>

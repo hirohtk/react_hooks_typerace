@@ -24,12 +24,6 @@ const UserStats = (props) => {
                             )}
                         </tbody>
                     </table>
-                    <div>
-                        Test section
-                        {props.history.map((each, index) => (
-                            <span>{each.quote}{each.score}</span>
-                        ))}
-                    </div>
                 </div>
             }
         </div>

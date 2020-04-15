@@ -65,7 +65,7 @@ const Game = () => {
     // console.log(`event.target.value is ${event.target.value} and its length is ${event.target.value.length}`)
     // console.log(`selection[0] is ${selection[0]} and its length is ${selection[0].length}`)
     let howFarAlong = Math.floor((event.target.value.length / selection[0].length) * 100);
-    console.log(howFarAlong);
+
     setProgress(howFarAlong);
     // need to do this with event.target.value, not userText
     if (event.target.value === selection[0].trim()) {
@@ -185,17 +185,25 @@ const Game = () => {
             quote: response.data[j].quote,
             score: response.data[j].score,
           }
-          if (j === indexThatChanged) {
-            newObj.changed = true;
-            // response.data[j].changed = true;
+          // When explicitly j is 0 and indexthatchanged is 1, then set true because...
+          if (j === 0) {
+            if (indexThatChanged === 1) {
+              newObj.changed = true;
+            }
           }
           else {
-            newObj.changed = false;
-            // response.data[j].changed = false;
+            // ...indexThatChanged starts at 1, so j, even if equals 0 (i.e. new Rank 1 posted, it will never trigger a true)
+            if (j === indexThatChanged) {
+              newObj.changed = true;
+            }
+            else {
+              newObj.changed = false;
+  
+            }
           }
           newObjArr.push(newObj);
         }
-        console.log(`adding changed to response.data ${JSON.stringify(response.data)}`)
+        console.log(`adding changed to response.data ${JSON.stringify(newObjArr)}`)
         setStats(newObjArr);
       }
       else {

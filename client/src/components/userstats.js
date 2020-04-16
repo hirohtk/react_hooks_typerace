@@ -7,7 +7,7 @@ const UserStats = (props) => {
         <div>
             {props.firstRender === true || props.loggedIn === false ? "" :
                 <div id="userSection">
-                    <h2>Your Top Scores!</h2>
+                    <h2 className="centerAlign">Your Top Scores!</h2>
                     <table >
                         <tbody>
                             <tr>
@@ -17,12 +17,7 @@ const UserStats = (props) => {
                             </tr>
                             {props.history.map((each, index) => (
                                 each.changed === true ? 
-                                <div>
-                                    AAAAH
-                                    <tr key={index}><td className="gold">{index + 1}</td><td className="gold">{each.quote}</td><td className="gold">{each.score}</td></tr>
-                                </div>
-                                 
-                                
+                                    <tr key={index}><td className="green">{index + 1}</td><td className="green">{each.quote}</td><td className="green">{each.score}</td></tr>
                                 :
                                 <tr key={index}><td>{index + 1}</td><td>{each.quote}</td><td>{each.score}</td></tr>
                             )

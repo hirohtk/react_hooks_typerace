@@ -159,11 +159,14 @@ const Game = () => {
         }
         // then, check each array object's key values for equality
         else {
-          for (let i = 1; i < arr1.length; i++) {
-            indexThatChanged = i;
-            console.log(i);
+          for (let i = 0; i < arr1.length; i++) {
             if (arr1[i].quote != arr2[i].quote || arr1[i].score != arr2[i].score) {
+              indexThatChanged = i;
+              console.log(`FOUND DISCREPANCY, AND INDEX THAT DOES NOT MATCH IS ${indexThatChanged}`)
               return false;
+            }
+            else {
+              console.log("No mismatch, going onto next iteration");
             }
           }
         }
@@ -177,7 +180,7 @@ const Game = () => {
       else if (arrEquals(prevStats, response.data) === false) {
         console.log("prevStats is " + JSON.stringify(prevStats))
         console.log("response.data is " + JSON.stringify(response.data))
-        console.log(`there is a difference between previous stats, and response in position ${indexThatChanged + 1}`)
+        console.log(`there is a difference between previous stats, and response in position ${indexThatChanged}`)
         setPrevStats(response.data);
         let newObjArr = [];
         for (let j = 0; j < response.data.length; j++) {
@@ -185,31 +188,22 @@ const Game = () => {
             quote: response.data[j].quote,
             score: response.data[j].score,
           }
-          // When explicitly j is 0 and indexthatchanged is 1, then set true because...
-          if (j === 0) {
-            if (indexThatChanged === 1) {
-              newObj.changed = true;
-            }
+          if (j === indexThatChanged) {
+            console.log(`WE HAVE A DIRECT MATCH.  j is ${j} and indexthatchanged is ${indexThatChanged} \n ***************`)
+            newObj.changed = true;
           }
           else {
-            // ...indexThatChanged starts at 1, so j, even if equals 0 (i.e. new Rank 1 posted, it will never trigger a true)
-            if (j === indexThatChanged) {
-              newObj.changed = true;
-            }
-            else {
-              newObj.changed = false;
-  
-            }
+            console.log(`no direct match.  j is ${j} and indexthatchanged is ${indexThatChanged} \n ***************`)
+            newObj.changed = false;
           }
           newObjArr.push(newObj);
         }
-        console.log(`adding changed to response.data ${JSON.stringify(newObjArr)}`)
+        console.log(`here's the newobj array ${JSON.stringify(newObjArr)} \n ***************`)
         setStats(newObjArr);
       }
       else {
         console.log("no change in stats")
       }
-      console.log(`well, at this point stats from state is ${JSON.stringify(stats)} versus response.data which is ${JSON.stringify(response.data)}`);
     })
   }
 
@@ -262,6 +256,7 @@ const Game = () => {
   }
 
   const promptRegister = () => {
+    setLoggingIn(false);
     setRegistering(true);
     onOpenModal();
   }
@@ -290,7 +285,7 @@ const Game = () => {
       toast.error(message);
     }
   }
-  ;
+    ;
 
   const doLogOrReg = () => {
     let credentials = {
@@ -314,7 +309,7 @@ const Game = () => {
           setUserName("");
           setUserPassword("");
           getStats(response.data.id);
-          notify("success",`${response.data.username} is now logged in!`);
+          notify("success", `${response.data.username} is now logged in!`);
           // GRAB USER DETAILS -- response.data is the username
         }
       });
@@ -503,15 +498,15 @@ const Game = () => {
               "")
         }
         <ToastContainer
-        position="top-center"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnVisibilityChange
-        draggable
-        pauseOnHover={false}></ToastContainer>
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnVisibilityChange
+          draggable
+          pauseOnHover={false}></ToastContainer>
         <UserStats firstRender={firstRender} history={stats} loggedIn={loggedIn}>
 
         </UserStats>

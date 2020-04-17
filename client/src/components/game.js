@@ -472,13 +472,25 @@ const Game = () => {
               </div>}
         </Modal>
 
-        <HighScores
-          firstRender={firstRender}
-          scores={scores}
-        ></HighScores>
 
-        <UserStats firstRender={firstRender} history={stats} loggedIn={loggedIn}>
-        </UserStats>
+        {// Ternary for visual display of one table or two tables side by side
+          firstRender === true || loggedIn === false ? 
+          <HighScores firstRender={firstRender}
+            scores={scores}></HighScores> 
+            :
+            <div className="row">
+              <div className="col 6" style={{ marginTop: "2rem" }}>
+                <HighScores
+                  firstRender={firstRender}
+                  scores={scores}
+                ></HighScores>
+              </div>
+              <div className="col 6">
+                <UserStats firstRender={firstRender} history={stats} loggedIn={loggedIn}>
+                </UserStats>
+              </div>
+            </div>
+        }
 
         <ToastContainer
           position="top-center"

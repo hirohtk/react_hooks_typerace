@@ -8,18 +8,18 @@ const UserStats = (props) => {
             {props.firstRender === true || props.loggedIn === false ? "" :
                 <div id="userSection">
                     <h2 className="centerAlign">Your Top Scores!</h2>
-                    <table >
+                    <table className="table ">
+                    <thead>
+                                <th scope="col">Rank</th>
+                                <th scope="col">Quote</th>
+                                <th scope="col">Score (milliseconds)</th>
+                            </thead>
                         <tbody>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Quote</th>
-                                <th>Score (milliseconds)</th>
-                            </tr>
                             {props.history.map((each, index) => (
                                 each.changed === true ? 
-                                    <tr key={index}><td className="green">{index + 1}</td><td className="green">{each.quote}</td><td className="green">{each.score}</td></tr>
+                                    <tr key={index}><th scope="row" className="green">{index + 1}</th><td className="green">{each.quote}</td><td className="green">{each.score}</td></tr>
                                 :
-                                <tr key={index}><td>{index + 1}</td><td>{each.quote}</td><td>{each.score}</td></tr>
+                                <tr key={index}><th scope="row" >{index + 1}</th><td>{each.quote}</td><td>{each.score}</td></tr>
                             )
                             )}
                         </tbody>

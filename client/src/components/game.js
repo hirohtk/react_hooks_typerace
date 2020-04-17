@@ -6,7 +6,7 @@ import "./game.css"
 import Timer from "react-compound-timer"
 import Nav from './nav'
 import UserStats from "./userstats"
-
+import HighScores from "./highscores"
 
 // Import react-circular-progressbar module and styles
 import {
@@ -472,31 +472,14 @@ const Game = () => {
               </div>}
         </Modal>
 
-        {(firstRender === true) ? "" :
-          <h2 className="centerAlign">High scores on this quote:</h2>
-        }
-        {
-          (firstRender === false && scores.name === "No Scores yet on this quote!") ?
-            <h2 className="centerAlign">No Scores yet on this quote</h2> :
-            ((firstRender === false) ?
-              <table >
-                <tbody>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Name</th>
-                    <th>Score (milliseconds)</th>
-                  </tr>
-                  {scores.map((each, index) =>
-                    each.name === localStorage.currentName && each.score === localStorage.currentScore ?
-                      <tr key={index}><td className="gold">{index + 1}</td><td className="gold">{each.name}</td> <td className="gold">{each.score}</td></tr>
-                      :
-                      <tr key={index}><td>{index + 1}</td><td>{each.name}</td><td>{each.score}</td></tr>
-                  )}
-                </tbody>
-              </table>
-              :
-              "")
-        }
+        <HighScores
+          firstRender={firstRender}
+          scores={scores}
+        ></HighScores>
+
+        <UserStats firstRender={firstRender} history={stats} loggedIn={loggedIn}>
+        </UserStats>
+
         <ToastContainer
           position="top-center"
           autoClose={3000}
@@ -507,9 +490,6 @@ const Game = () => {
           pauseOnVisibilityChange
           draggable
           pauseOnHover={false}></ToastContainer>
-        <UserStats firstRender={firstRender} history={stats} loggedIn={loggedIn}>
-
-        </UserStats>
         {/* 
 
       DON'T USE this HERE- App IS A FUNCTION, AND this DEFAULTS TO WINDOW

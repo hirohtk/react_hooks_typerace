@@ -8,7 +8,7 @@ const UserStats = (props) => {
             {props.firstRender === true || props.loggedIn === false ? "" :
                 <div id="userSection">
                     <h2 className="centerAlign">Your Top Scores!</h2>
-                    <table className="table ">
+                    <table className="table table-dark">
                     <thead>
                                 <th scope="col">Rank</th>
                                 <th scope="col">Quote</th>

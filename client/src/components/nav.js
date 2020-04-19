@@ -8,7 +8,7 @@ const Nav = (props) => {
     return (
         <div>
             <nav className="navbar navbar-light bg-dark">
-                <a className="navbar-brand"><strong>Type Race</strong></a>
+                <a className="navbar-brand" style={{color:"white"}}><strong>Type Race</strong></a>
 
                 <ul class="nav justify-content-end">
                     <li class="nav-item"><span>{props.currentUser != undefined ? `Welcome, ${props.currentUser}!` : ""}</span></li>

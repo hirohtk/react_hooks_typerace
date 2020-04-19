@@ -400,7 +400,7 @@ const Game = () => {
   }, [gameState.prepared])
 
   return (
-    <div>
+    <div id="mainDiv">
       <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister} currentUser={currentUser[0]}></Nav>
       <div className="container fluid">
         {gameState.readyMessage}
@@ -415,12 +415,7 @@ const Game = () => {
               <br></br>
               {/* <footer className=""><cite title="Source Title">{selection[1]}</cite></footer> */}
             </blockquote>
-          </div>
-        </div>
-
-        <br></br>
-
-        {gameState.prepared === true && gameState.victory === false ?
+            {gameState.prepared === true && gameState.victory === false ?
           <div>
             <input id="textbox" class="blockquote mb-0"
               value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length - 10} maxLength={selection[0].length}>
@@ -445,6 +440,12 @@ const Game = () => {
           </div>
           : null}
         <br></br>
+          </div>
+        </div>
+
+        <br></br>
+
+        
 
         {firstRender === true ? <button onClick={() => startGame()}>Start!</button>
           :
@@ -453,23 +454,23 @@ const Game = () => {
 
         {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
           <button onClick={() => reset()}>Play again?</button></div> : ""}
-        <Modal open={modal} onClose={onCloseModal} center>
+        <Modal open={modal} onClose={onCloseModal} center id="modal">
           {loggingIn === true ?
-            <div>
+            <div className="blackText">
               <h1>Login</h1>
               <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
               <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
               <button onClick={doLogOrReg}>Submit</button>
             </div>
             : registering === true ?
-              <div>
+              <div className="blackText">
                 <h1>User Registration</h1>
                 <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
                 <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
                 <button onClick={doLogOrReg}>Submit</button>
               </div>
               :
-              <div>
+              <div className="blackText">
                 Game finished in {gameState.totalTime} milliseconds. <br></br>
                 Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
                 <button onClick={() => addScore(gameState.totalTime)}>Submit</button>

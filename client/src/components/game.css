@@ -10,20 +10,20 @@ table, th, td {
   }
 
 .gold {
-    background-color: gold;
+    background-color: rgb(212, 181, 0);
     animation: finish 1s;
     animation-iteration-count: 3;
 }
 
 @keyframes finish {
     0% {
-        background-color: gold;
+        background-color: rgb(212, 181, 0);
     }
     50% {
-        background-color: rgb(255, 248, 208);
+        background-color: #343a40;
     }
     100% {
-        background-color: gold;
+        background-color: rgb(212, 181, 0);
     }
 }
 
@@ -35,21 +35,23 @@ table, th, td {
 
 @keyframes greenfinish {
     0% {
-        background-color: greenyellow;
+        background-color: rgb(115, 192, 0);
     }
     50% {
-        background-color: rgb(208, 255, 208);
+        background-color: #343a40;
     }
     100% {
-        background-color: greenyellow;
+        background-color: rgb(115, 192, 0);
     }
 }
 
 .err {
+    color:black;
 background-color: pink;
 }
 
 .correct {
+    color:black;
     background-color: greenyellow
 }
 
@@ -59,17 +61,42 @@ background-color: pink;
 
 #textbox {
     position: relative;
-    left: 1.2rem;
     font-weight: bolder;
     font-size: 20px;
     border-radius: 4px;
     border-color: teal;
 }
 
+.shiftRight {
+    position: relative;
+    left: 1.3rem;
+}
+
 .CircularProgressbar {
     height: 100px;
     width: 100px;
 }
+
+body, .card {
+    background-color: #4a4c4d;
+    color:whitesmoke
+}
+
+.card {
+    border-color:whitesmoke
+}
+
+.blackText {
+    color: black;
+}
+
+/* body {
+    
+}
+
+.card {
+    background-color: #4a4c4d;
+} */
 
 th {
     width: 10%
@@ -106,18 +133,20 @@ body{
 
 /* Animation */
 
-/* blinkTextCursor 750ms steps(44) infinite normal; */
+/*  */
 
 .anim-typewriter{
   animation: typewriter 3s steps(44) 1s 1 normal both,
-             
+  blinkTextCursor 750ms steps(44) 1s 1 normal;
+  font-weight: bold;
 }
 @keyframes typewriter{
   from{width: 0;}
   to{width: 100%;}
 }
 @keyframes blinkTextCursor{
-  from{border-right-color: rgba(0, 0, 0, 0.75);}
+  from{border-right-color: rgba(255, 255, 255, 0.75);}
   to{border-right-color: transparent;}
 }
 /* BLOCK FOR ANIMATING QUOTE */
+

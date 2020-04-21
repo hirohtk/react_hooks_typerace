@@ -407,16 +407,14 @@ const Game = () => {
         <br></br><br></br>
         <div className="card">
           <div className="card-body">
+            <div className="row">
             <blockquote className="blockquote mb-0">
               <p>Your quote to type is:</p>
-              <br></br>
-              {/* <span id="quote" >{selection[0]}<br></br></span> */}
               <p className="line-1 anim-typewriter">{selection[0]}</p>
-              <br></br>
-              {/* <footer className=""><cite title="Source Title">{selection[1]}</cite></footer> */}
             </blockquote>
             {gameState.prepared === true && gameState.victory === false ?
           <div>
+            <br></br>
             <input id="textbox" class="blockquote mb-0"
               value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length - 10} maxLength={selection[0].length}>
             </input>
@@ -440,6 +438,8 @@ const Game = () => {
           </div>
           : null}
         <br></br>
+            </div>
+            
           </div>
         </div>
 

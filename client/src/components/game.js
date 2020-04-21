@@ -408,6 +408,12 @@ const Game = () => {
         <div className="card">
           <div className="card-body">
             <div className="row">
+              {/* <div className="col l9">
+                
+              </div>
+              <div className="col l3">
+
+              </div> */}
             <blockquote className="blockquote mb-0">
               <p>Your quote to type is:</p>
               <p className="line-1 anim-typewriter">{selection[0]}</p>

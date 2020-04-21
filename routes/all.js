@@ -208,13 +208,16 @@ router.post("/api/login", (req, res, next) => {
 });
 
 router.post("/api/register", function (req, res) {
-  db.Users.register({ username: req.body.username }, req.body.password, (err) => {
+  db.Users.register({ username: req.body.username }, req.body.password, (err, response) => {
     if (err) {
       console.log("error", err);
+      res.json(err);
     }
-    console.log(`creating a new user, name is ${req.body.username}, password is ${req.body.password}`)
+    else {
+      console.log(`creating a new user, name is ${req.body.username}, password is ${req.body.password}`)
+      res.json({name: response.username})
+    }
   });
-  res.json("Users created")
 });
 
 router.get("/private", connectEnsureLogin.ensureLoggedIn(), function (req, res) {

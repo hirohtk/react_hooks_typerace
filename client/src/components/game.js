@@ -317,9 +317,10 @@ const Game = () => {
     //register
     else if (registering === true) {
       axios.post("/api/register", credentials).then((response, err) => {
-        // console.log(response.data);
-        if (err) {
-          notify("failure", `Registration Failed!`);
+        console.log(`response from registering is ${JSON.stringify(response.data)}`);
+        if (response.data.name === "UserExistsError") {
+          console.log(`the error for registration is ${err}`)
+          notify("failure", `Sorry!  Username in use- please select another name.`);
         }
         else {
           onCloseModal();

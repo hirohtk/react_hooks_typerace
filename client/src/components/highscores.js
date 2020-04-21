@@ -12,7 +12,7 @@ const HighScores = (props) => {
           (props.firstRender === false && props.scores.name === "No Scores yet on this quote!") ?
             <h2 className="centerAlign">No Scores yet on this quote</h2> :
             ((props.firstRender === false) ?
-              <table className="table ">
+              <table className="table table-dark">
                   <thead>
                     <th scope="col">Rank</th>
                     <th scope="col">Name</th>

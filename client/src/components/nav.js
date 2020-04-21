@@ -11,7 +11,7 @@ const Nav = (props) => {
                 <a className="navbar-brand" style={{color:"white"}}><strong>Type Race</strong></a>
 
                 <ul class="nav justify-content-end">
-                    <li class="nav-item"><span>{props.currentUser != undefined ? `Welcome, ${props.currentUser}!` : ""}</span></li>
+                    <li class="nav-item"><span id="welcome">{props.currentUser != undefined ? `Welcome, ${props.currentUser}!` : ""}</span></li>
                     <li class="nav-item">
                     
                         <AwesomeButton type="secondary" ripple

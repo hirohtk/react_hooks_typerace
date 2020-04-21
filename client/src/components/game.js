@@ -408,13 +408,8 @@ const Game = () => {
         <div className="card">
           <div className="card-body">
             <div className="row">
-              {/* <div className="col l9">
-                
-              </div>
-              <div className="col l3">
 
-              </div> */}
-            <blockquote className="blockquote mb-0">
+              <blockquote className="blockquote mb-0">
               <p>Your quote to type is:</p>
               <p className="line-1 anim-typewriter">{selection[0]}</p>
             </blockquote>
@@ -427,6 +422,10 @@ const Game = () => {
             <br></br>
             {gameState.timer === true ?
               <div>
+                
+                {/*  if you have two characters, the array will render two each's, and so forth */}
+                <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
+                {/* <CircularProgressbar value={progress} text={`${progress}%`}/> */}
                 <Timer
                   startImmediately={false}>
                   {({ start, resume, pause, stop, reset, timerState }) => (
@@ -436,22 +435,17 @@ const Game = () => {
                     </React.Fragment>
                   )}
                 </Timer>
-                {/*  if you have two characters, the array will render two each's, and so forth */}
-                <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
-                {/* <CircularProgressbar value={progress} text={`${progress}%`}/> */}
               </div>
               : <div style={{ height: "3.6rem" }}></div>}
           </div>
           : null}
         <br></br>
+              
             </div>
-            
           </div>
         </div>
 
         <br></br>
-
-        
 
         {firstRender === true ? <button onClick={() => startGame()}>Start!</button>
           :

@@ -430,10 +430,13 @@ const Game = () => {
                 <Timer
                   startImmediately={false}>
                   {({ start, resume, pause, stop, reset, timerState }) => (
+
                     <React.Fragment>
-                      <Timer.Seconds /> seconds have elapsed!
+                      {new Date().getTime() - gameState.startTime > 60000 ? <span><Timer.Minutes></Timer.Minutes> Minutes and <Timer.Seconds /> seconds have elapsed!</span>
+                       : <span><Timer.Seconds /> seconds have elapsed!</span>} 
                 {start()}
                     </React.Fragment>
+
                   )}
                 </Timer>
               </div>

@@ -132,7 +132,7 @@ router.get("/api/quote/:quote", (req, res) => {
           // duplicate scores (which in this application are rare anyway) shouldn't matter as the name can be attributed to either score 
           sortedObjects.push(unsortedObjects[index])
         }
-        res.json(sortedObjects);
+        res.json(sortedObjects.slice(0, 21));
       }
       else {
         // needed to send this back as an array so that the array.map function to display scores still works on

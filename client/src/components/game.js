@@ -7,6 +7,9 @@ import Timer from "react-compound-timer"
 import Nav from './nav'
 import UserStats from "./userstats"
 import HighScores from "./highscores"
+import { AwesomeButton } from "react-awesome-button";
+import "react-awesome-button/dist/styles.css";
+
 
 // Import react-circular-progressbar module and styles
 import {
@@ -404,18 +407,19 @@ const Game = () => {
     <div id="mainDiv">
       <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister} currentUser={currentUser[0]}></Nav>
       <div className="container fluid">
-        {gameState.readyMessage}
+        
         <br></br><br></br>
         <div className="card">
           <div className="card-body">
             <div className="row">
 
-              <blockquote className="blockquote mb-0">
+              
+            {gameState.prepared === true && gameState.victory === false ?
+          <div>
+            <blockquote className="blockquote mb-0">
               <p>Your quote to type is:</p>
               <p className="line-1 anim-typewriter">{selection[0]}</p>
             </blockquote>
-            {gameState.prepared === true && gameState.victory === false ?
-          <div>
             <br></br>
             <input id="textbox" class="blockquote mb-0"
               value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length - 10} maxLength={selection[0].length}>
@@ -440,9 +444,16 @@ const Game = () => {
                   )}
                 </Timer>
               </div>
-              : <div style={{ height: "3.6rem" }}></div>}
+              : <div style={{ height: "3.6rem" }}>{gameState.readyMessage}</div>}
           </div>
-          : null}
+          : <div>
+            <p style={{fontWeight: "bold", fontSize: "20px"}}>Welcome to Type Race!</p>
+            <ul>
+            <li>You will be presented with randomized quotes scraped from <a href="https://www.universalclass.com/articles/self-help/keyboarding-practice-sentence-repetition.htm">this website.</a></li><br></br>
+            <li>This game will time how long it takes for you to type out each quote, and record each time as your score.</li><br></br>
+            <li>Compete for the fastest scores!  Login to save your scores, or post your scores anonymously on each quote!</li>
+            </ul>
+            </div>}
         <br></br>
               
             </div>
@@ -451,9 +462,9 @@ const Game = () => {
 
         <br></br>
 
-        {firstRender === true ? <button onClick={() => startGame()}>Start!</button>
+        {firstRender === true ? <AwesomeButton type="primary" onPress={() => startGame()}>Start!</AwesomeButton>
           :
-          gameState.startTime === null ? <button onClick={() => setup()}>Get another random quote to use.</button> : ""}
+          gameState.startTime === null ? <AwesomeButton type="primary" onPress={() => setup()}>Change quote</AwesomeButton> : ""}
         <br></br>
 
         {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>

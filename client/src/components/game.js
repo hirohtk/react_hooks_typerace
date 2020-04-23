@@ -424,7 +424,6 @@ const Game = () => {
             <input id="textbox" class="blockquote mb-0"
               value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length - 10} maxLength={selection[0].length}>
             </input>
-            <br></br>
             {gameState.timer === true ?
               <div>
                 
@@ -445,17 +444,17 @@ const Game = () => {
                 </Timer>
               </div>
               : <div style={{ height: "3.6rem" }}>{gameState.readyMessage}</div>}
-          </div>
-          : <div>
+          </div> 
+          : gameState.victory === true ? <p style={{fontSize:"20px", fontWeight:"bold"}}>{selection[0]}</p> : <div>
             <p style={{fontWeight: "bold", fontSize: "20px"}}>Welcome to Type Race!</p>
             <ul>
             <li>You will be presented with randomized quotes scraped from <a href="https://www.universalclass.com/articles/self-help/keyboarding-practice-sentence-repetition.htm">this website.</a></li><br></br>
             <li>This game will time how long it takes for you to type out each quote, and record each time as your score.</li><br></br>
             <li>Compete for the fastest scores!  Login to save your scores, or post your scores anonymously on each quote!</li>
             </ul>
-            </div>}
+            </div> 
+            }
         <br></br>
-              
             </div>
           </div>
         </div>

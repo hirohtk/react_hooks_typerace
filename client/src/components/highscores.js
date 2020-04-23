@@ -6,7 +6,7 @@ const HighScores = (props) => {
     return (
         <div>
             {(props.firstRender === true) ? "" :
-          <h2 className="centerAlign">High scores on this quote:</h2>
+          <h2 className="centerAlign">Top 20 scores on this quote:</h2>
         }
         {
           (props.firstRender === false && props.scores.name === "No Scores yet on this quote!") ?

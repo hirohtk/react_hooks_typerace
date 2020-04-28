@@ -112,7 +112,9 @@ th {
     width: 10%
 }
 
-
+#arcadeSubmit {
+    display:block;
+}
 
 @media only screen and (min-width: 993px) {
 /* BLOCK FOR ANIMATING QUOTE */

@@ -415,15 +415,15 @@ const Game = () => {
 
               
             {gameState.prepared === true && gameState.victory === false ?
-          <div>
+          <div className="innerMost">
             <blockquote className="blockquote mb-0">
               <p>Your quote to type is:</p>
               <p className="line-1 anim-typewriter">{selection[0]}</p>
             </blockquote>
             <br></br>
-            <input id="textbox" class="blockquote mb-0"
+            <textarea id="textbox" class="blockquote mb-0"
               value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length - 10} maxLength={selection[0].length}>
-            </input>
+            </textarea>
             {gameState.timer === true ?
               <div>
                 

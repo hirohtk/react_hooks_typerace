@@ -72,6 +72,8 @@ font-size: 20px;
     opacity: 1;
     animation: fadeIn 1s, fadeInSetup 0.5s;
     animation-delay: 0.5s, 0s;
+    width: 100%;
+    resize: none;
 }
 
 @keyframes fadeIn{
@@ -121,6 +123,9 @@ th {
     width: 10%
 }
 
+
+
+@media only screen and (min-width: 993px) {
 /* BLOCK FOR ANIMATING QUOTE */
 /* Google Fonts */
 @import url(https://fonts.googleapis.com/css?family=Anonymous+Pro);
@@ -168,4 +173,41 @@ body{
   to{border-right-color: transparent;}
 }
 /* BLOCK FOR ANIMATING QUOTE */
+}
 
+@media only screen and (max-width: 992px) {
+
+    #textbox {
+        position: relative;
+        font-weight: bolder;
+        font-size: 20px;
+        border-radius: 4px;
+        border-color: teal;
+        opacity: 1;
+        animation: fadeIn 1s, fadeInSetup 0.5s;
+        animation-delay: 0.5s, 0s;
+        width: 100%;
+        resize: none;
+    }
+
+    @import url(https://fonts.googleapis.com/css?family=Anonymous+Pro);
+
+.line-1{
+    position: relative;
+    top: 25%;  
+    width: 100%;
+    /* margin: 0 auto; */
+    /* text-align: center; */
+
+    /* border-right: 2px solid rgba(255,255,255,.75);
+    font-size: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    transform: translateY(-50%);     */
+}
+
+.innerMost {
+    overflow: hidden;
+}
+
+}

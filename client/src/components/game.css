@@ -63,18 +63,7 @@ font-size: 20px;
     font-weight: bolder;
 }
 
-#textbox {
-    position: relative;
-    font-weight: bolder;
-    font-size: 20px;
-    border-radius: 4px;
-    border-color: teal;
-    opacity: 1;
-    animation: fadeIn 1s, fadeInSetup 0.5s;
-    animation-delay: 0.5s, 0s;
-    width: 100%;
-    resize: none;
-}
+
 
 @keyframes fadeIn{
     0% {
@@ -173,6 +162,20 @@ body{
   to{border-right-color: transparent;}
 }
 /* BLOCK FOR ANIMATING QUOTE */
+
+#textbox {
+    position: relative;
+    font-weight: bolder;
+    font-size: 20px;
+    border-radius: 4px;
+    border-color: teal;
+    opacity: 1;
+    animation: fadeIn 1s, fadeInSetup 1s;
+    animation-delay: 1s, 0s;
+    width: 100%;
+    resize: none;
+    height: 2.5rem;
+}
 }
 
 @media only screen and (max-width: 992px) {
@@ -204,6 +207,7 @@ body{
     white-space: nowrap;
     overflow: hidden;
     transform: translateY(-50%);     */
+    font-weight: bold;
 }
 
 .innerMost {

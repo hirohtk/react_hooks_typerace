@@ -415,15 +415,15 @@ const Game = () => {
 
               
             {gameState.prepared === true && gameState.victory === false ?
-          <div>
+          <div className="innerMost">
             <blockquote className="blockquote mb-0">
               <p>Your quote to type is:</p>
               <p className="line-1 anim-typewriter">{selection[0]}</p>
             </blockquote>
             <br></br>
-            <input id="textbox" class="blockquote mb-0"
+            <textarea id="textbox" class="blockquote mb-0"
               value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length - 10} maxLength={selection[0].length}>
-            </input>
+            </textarea>
             {gameState.timer === true ?
               <div>
                 
@@ -474,20 +474,20 @@ const Game = () => {
               <h1>Login</h1>
               <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
               <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
-              <button onClick={doLogOrReg}>Submit</button>
+              <button id="arcadeSubmit" onClick={doLogOrReg}>Submit</button>
             </div>
             : registering === true ?
               <div className="blackText">
                 <h1>User Registration</h1>
                 <input placeholder="Username" name="username" value={userName} maxLength="16" onChange={loginRegisterGate}></input>
                 <input placeholder="Password" name="password" type="password" value={userPassword} maxLength="16" onChange={loginRegisterGate}></input>
-                <button onClick={doLogOrReg}>Submit</button>
+                <button id="arcadeSubmit" onClick={doLogOrReg}>Submit</button>
               </div>
               :
               <div className="blackText">
                 Game finished in {gameState.totalTime} milliseconds. <br></br>
                 Please enter your name: <input id="nameField" placeholder="Name Here" value={pubUserName} maxLength="16" onChange={updateUserName}></input>
-                <button onClick={() => addScore(gameState.totalTime)}>Submit</button>
+                <button id="arcadeSubmit" onClick={() => addScore(gameState.totalTime)}>Submit</button>
               </div>}
         </Modal>
 

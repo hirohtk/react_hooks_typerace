@@ -1,22 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from "axios";
-import ReactDOM from 'react-dom'
-import Modal from "react-responsive-modal"
-import "./game.css"
-import Timer from "react-compound-timer"
-import Nav from './nav'
-import UserStats from "./userstats"
-import HighScores from "./highscores"
+import ReactDOM from 'react-dom';
+import Modal from "react-responsive-modal";
+import "./game.css";
+import Timer from "react-compound-timer";
+import Nav from './nav';
+import UserStats from "./userstats";
+import HighScores from "./highscores";
+import Card from "./card";
 import { AwesomeButton } from "react-awesome-button";
 import "react-awesome-button/dist/styles.css";
 
 
-// Import react-circular-progressbar module and styles
-import {
-  CircularProgressbar,
-  CircularProgressbarWithChildren,
-  buildStyles
-} from "react-circular-progressbar";
+// Import react-circular-progressbar module and styles -- UNUSED
+// import {
+//   CircularProgressbar,
+//   CircularProgressbarWithChildren,
+//   buildStyles
+// } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
 import { ToastContainer, toast } from 'react-toastify';
@@ -35,7 +36,6 @@ const Game = () => {
 
   // Note to self:  the 0th index can be an array (which you can use to map)
 
-  // FOR FIRING USEEFFECTS THAT SHOULD NOT FIRE ON THE FIRST RENDER
   const firstMount = useRef(true);
   const [prevQuote, setprevQuote] = useState("");
   const [quotes, setQuotes] = useState([]);
@@ -409,55 +409,14 @@ const Game = () => {
       <div className="container fluid">
         
         <br></br><br></br>
-        <div className="card">
-          <div className="card-body">
-            <div className="row">
-
-              
-            {gameState.prepared === true && gameState.victory === false ?
-          <div className="innerMost">
-            <blockquote className="blockquote mb-0">
-              <p>Your quote to type is:</p>
-              <p className="line-1 anim-typewriter">{selection[0]}</p>
-            </blockquote>
-            <br></br>
-            <textarea id="textbox" class="blockquote mb-0"
-              value={userText} onChange={updateUserText} autoComplete="off" size={selection[0].length - 10} maxLength={selection[0].length}>
-            </textarea>
-            {gameState.timer === true ?
-              <div>
-                
-                {/*  if you have two characters, the array will render two each's, and so forth */}
-                <p style={{ position: "relative", left: "2px" }}>{checker.map((each) => each.includes("_") ? <span className="err">{each}</span> : <span className="correct">{each}</span>)}</p>
-                {/* <CircularProgressbar value={progress} text={`${progress}%`}/> */}
-                <Timer
-                  startImmediately={false}>
-                  {({ start, resume, pause, stop, reset, timerState }) => (
-
-                    <React.Fragment>
-                      {new Date().getTime() - gameState.startTime > 60000 ? <span><Timer.Minutes></Timer.Minutes> Minutes and <Timer.Seconds /> seconds have elapsed!</span>
-                       : <span><Timer.Seconds /> seconds have elapsed!</span>} 
-                {start()}
-                    </React.Fragment>
-
-                  )}
-                </Timer>
-              </div>
-              : <div style={{ height: "3.6rem" }}>{gameState.readyMessage}</div>}
-          </div> 
-          : gameState.victory === true ? <p style={{fontSize:"20px", fontWeight:"bold"}}>{selection[0]}</p> : <div>
-            <p style={{fontWeight: "bold", fontSize: "20px"}}>Welcome to Type Race!</p>
-            <ul>
-            <li>You will be presented with randomized quotes scraped from <a href="https://www.universalclass.com/articles/self-help/keyboarding-practice-sentence-repetition.htm">this website.</a></li><br></br>
-            <li>This game will time how long it takes for you to type out each quote, and record each time as your score.</li><br></br>
-            <li>Compete for the fastest scores!  Login to save your scores, or post your scores anonymously on each quote!</li>
-            </ul>
-            </div> 
-            }
-        <br></br>
-            </div>
-          </div>
-        </div>
+        
+        <Card
+        gameState={gameState}
+        selection={selection}
+        userText={userText}
+        updateUserText={updateUserText}
+        checker={checker}>          
+        </Card>
 
         <br></br>
 

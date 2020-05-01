@@ -83,6 +83,9 @@ font-size: 20px;
     }
 }
 
+#gameButton {
+    margin-top: 2rem;
+}
 
 .shiftRight {
     position: relative;
@@ -100,7 +103,8 @@ body, .card {
 }
 
 .card {
-    border-color:whitesmoke
+    border-color:whitesmoke;
+    margin-top: 4rem;  
 }
 
 .blackText {

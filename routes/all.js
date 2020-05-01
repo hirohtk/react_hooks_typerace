@@ -7,11 +7,10 @@ const cheerio = require("cheerio");
 
 const passport = require("passport");
 
-// THIS EITHER NEEDS TO BE HERE OR IN SERVER, WE'LL SEE
+// This was needed to be here with routes, rather than server
 passport.use(db.Users.createStrategy());
 passport.serializeUser(db.Users.serializeUser());
 passport.deserializeUser(db.Users.deserializeUser());
-// THIS EITHER NEEDS TO BE HERE OR IN SERVER, WE'LL SEE
 
 // /The connect-ensure-login package is middleware that ensures a user is logged in.
 const connectEnsureLogin = require("connect-ensure-login");
@@ -38,9 +37,7 @@ router.get("/scrape", function (req, res) {
         arr.splice(i + 1, 1);
       }
       for (let j = 0; j < arr.length; j++) {
-        // regex:  replace all numbers with nothing (DOESNT WORK IF THERE ARE NUMBERS IN THE MIDDLE THOUGH)
-        // let numRemoved = arr[j].replace(/[0-9]/g, '').slice(1).trim()
-        //also need to replace different apostrophe
+        // Cut off the first three indexes, remove whitespace, and replace all "’" with "'", etc.
         let numRemoved = arr[j].slice(3).trim().replace("’", "'").replace("–", "-")
         newArr.push(numRemoved);
       }

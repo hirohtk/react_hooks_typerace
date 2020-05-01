@@ -3,11 +3,12 @@ import axios from "axios";
 import ReactDOM from 'react-dom';
 import Modal from "react-responsive-modal";
 import "./game.css";
-import Timer from "react-compound-timer";
+
 import Nav from './nav';
 import UserStats from "./userstats";
 import HighScores from "./highscores";
 import Card from "./card";
+import GameButton from "./gameButton";
 import { AwesomeButton } from "react-awesome-button";
 import "react-awesome-button/dist/styles.css";
 
@@ -408,8 +409,6 @@ const Game = () => {
       <Nav promptLogin={promptLogin} loggedIn={loggedIn} logOut={logOut} promptRegister={promptRegister} currentUser={currentUser[0]}></Nav>
       <div className="container fluid">
         
-        <br></br><br></br>
-        
         <Card
         gameState={gameState}
         selection={selection}
@@ -418,12 +417,13 @@ const Game = () => {
         checker={checker}>          
         </Card>
 
-        <br></br>
+      <GameButton
+      gameState={gameState}
+      firstRender={firstRender}
+      startGame={startGame}
+      setup={setup}>
+      </GameButton>
 
-        {firstRender === true ? <AwesomeButton type="primary" onPress={() => startGame()}>Start!</AwesomeButton>
-          :
-          gameState.startTime === null ? <AwesomeButton type="primary" onPress={() => setup()}>Change quote</AwesomeButton> : ""}
-        <br></br>
 
         {gameState.victory === true ? <div><h1>Game finished in {gameState.totalTime} milliseconds</h1><br></br>
           <button onClick={() => reset()}>Play again?</button></div> : ""}

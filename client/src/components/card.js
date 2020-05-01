@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Timer from "react-compound-timer";
 
 
 const Card = (props) => {
@@ -8,7 +9,6 @@ const Card = (props) => {
           <div className="card-body">
             <div className="row">
 
-              
             {props.gameState.prepared === true && props.gameState.victory === false ?
           <div className="innerMost">
             <blockquote className="blockquote mb-0">
@@ -17,7 +17,7 @@ const Card = (props) => {
             </blockquote>
             <br></br>
             <textarea id="textbox" class="blockquote mb-0"
-              value={props.userText} onChange={() => props.updateUserText()} autoComplete="off" size={props.selection[0].length - 10} maxLength={props.selection[0].length}>
+              value={props.userText} onChange={props.updateUserText} autoComplete="off" size={props.selection[0].length - 10} maxLength={props.selection[0].length}>
             </textarea>
             {props.gameState.timer === true ?
               <div>

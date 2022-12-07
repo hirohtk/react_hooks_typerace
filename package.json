@@ -24,11 +24,11 @@
   "homepage": "https://github.com/hirohtk/react_hooks_typerace#readme",
   "dependencies": {
     "axios": "^0.19.2",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "cheerio": "^1.0.0-rc.3",
     "concurrently": "^5.1.0",
     "connect-ensure-login": "^0.1.1",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "express-session": "^1.17.0",
     "i": "^0.3.6",
     "mongoose": "^5.9.3",
